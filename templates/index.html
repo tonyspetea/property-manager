@@ -679,7 +679,9 @@ tr:hover td{background:var(--bg);}
 </div>
 
 <script>
-const API='http://localhost:8000/api';
+const API = window.location.hostname === 'localhost' 
+  ? 'http://localhost:8000/api' 
+  : window.location.origin + '/api';
 let token=localStorage.getItem('pm_token');
 let userName=localStorage.getItem('pm_name')||'';
 let allProperties=[],allTenants=[],allPayments=[],yearlyChart=null,propImgBase64=null,tenantReportData=[];
