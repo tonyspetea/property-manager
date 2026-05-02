@@ -1,0 +1,1827 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gandwi Agencies | Rental & Plot Management</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Serif+Display&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root{--primary:#1B4332;--primary-light:#2D6A4F;--accent:#52B788;--accent-light:#D8F3DC;--gold:#B7791F;--gold-light:#FEFCE8;--danger:#C0392B;--danger-light:#FEF2F2;--warning:#D97706;--warning-light:#FFFBEB;--text:#1A1A2E;--text-muted:#6B7280;--border:#E5E7EB;--bg:#F9FAFB;--white:#FFFFFF;--sidebar-w:240px;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);}
+#auth-screen{display:flex;align-items:center;justify-content:center;min-height:100vh;background:linear-gradient(135deg,var(--primary) 0%,var(--primary-light) 100%);}
+.auth-card{background:var(--white);border-radius:16px;padding:2.5rem;width:100%;max-width:400px;box-shadow:0 20px 60px rgba(0,0,0,0.2);}
+.auth-logo{font-family:'DM Serif Display',serif;font-size:28px;color:var(--primary);margin-bottom:4px;}
+.auth-sub{font-size:14px;color:var(--text-muted);margin-bottom:2rem;}
+.auth-card h2{font-size:18px;font-weight:600;margin-bottom:1.5rem;}
+.form-group{margin-bottom:1rem;}
+.form-group label{display:block;font-size:13px;font-weight:500;color:var(--text-muted);margin-bottom:4px;}
+.form-group input,.form-group select,.form-group textarea{width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:8px;font-size:14px;font-family:'DM Sans',sans-serif;outline:none;transition:border 0.2s;background:var(--white);}
+.form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:var(--accent);}
+.btn{padding:10px 20px;border-radius:8px;font-size:14px;font-weight:500;cursor:pointer;border:none;font-family:'DM Sans',sans-serif;transition:all 0.2s;}
+.btn-primary{background:var(--primary);color:white;width:100%;}
+.btn-primary:hover{background:var(--primary-light);}
+.btn-accent{background:var(--accent);color:white;}
+.btn-accent:hover{opacity:0.9;}
+.btn-danger{background:var(--danger);color:white;}
+.btn-outline{background:transparent;border:1px solid var(--border);color:var(--text);}
+.btn-outline:hover{background:var(--bg);}
+.btn-gold{background:var(--gold);color:white;}
+.btn-sm{padding:5px 10px;font-size:12px;}
+.auth-error{background:var(--danger-light);color:var(--danger);padding:10px 12px;border-radius:8px;font-size:13px;margin-bottom:1rem;display:none;}
+#app{display:none;}
+.layout{display:flex;min-height:100vh;}
+.sidebar{width:var(--sidebar-w);background:var(--primary);min-height:100vh;position:fixed;left:0;top:0;display:flex;flex-direction:column;z-index:100;}
+.sidebar-logo{padding:1.5rem;border-bottom:1px solid rgba(255,255,255,0.1);}
+.sidebar-logo h1{font-family:'DM Serif Display',serif;font-size:22px;color:white;}
+.sidebar-logo p{font-size:11px;color:rgba(255,255,255,0.5);margin-top:2px;}
+.sidebar-nav{flex:1;padding:1rem 0;overflow-y:auto;}
+.nav-item{display:flex;align-items:center;gap:10px;padding:10px 1.5rem;color:rgba(255,255,255,0.65);font-size:14px;cursor:pointer;transition:all 0.2s;border-left:3px solid transparent;}
+.nav-item:hover{color:white;background:rgba(255,255,255,0.07);}
+.nav-item.active{color:white;background:rgba(255,255,255,0.12);border-left-color:var(--accent);}
+.nav-item .icon{font-size:16px;width:20px;text-align:center;}
+.sidebar-footer{padding:1rem 1.5rem;border-top:1px solid rgba(255,255,255,0.1);}
+.user-avatar{width:32px;height:32px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;color:white;}
+.user-info{display:flex;align-items:center;gap:10px;}
+.user-name{font-size:13px;color:white;font-weight:500;}
+.user-role{font-size:11px;color:rgba(255,255,255,0.5);}
+.logout-btn{background:none;border:none;color:rgba(255,255,255,0.5);cursor:pointer;font-size:13px;margin-top:8px;font-family:'DM Sans',sans-serif;padding:0;}
+.logout-btn:hover{color:white;}
+.main{margin-left:var(--sidebar-w);flex:1;padding:2rem;}
+.page-header{margin-bottom:1.5rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;}
+.page-title{font-family:'DM Serif Display',serif;font-size:26px;color:var(--text);}
+.page-sub{font-size:14px;color:var(--text-muted);margin-top:2px;}
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:1.5rem;}
+.stat-card{background:var(--white);border-radius:12px;padding:1.25rem;border:1px solid var(--border);}
+.stat-label{font-size:12px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:6px;}
+.stat-value{font-size:26px;font-weight:600;color:var(--text);}
+.stat-sub{font-size:12px;color:var(--text-muted);margin-top:4px;}
+.stat-accent{border-left:3px solid var(--accent);}
+.stat-gold{border-left:3px solid var(--gold);}
+.stat-danger{border-left:3px solid var(--danger);}
+.stat-primary{border-left:3px solid var(--primary);}
+.card{background:var(--white);border-radius:12px;border:1px solid var(--border);overflow:hidden;margin-bottom:1.5rem;}
+.card-header{padding:1rem 1.25rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+.card-title{font-size:15px;font-weight:600;}
+table{width:100%;border-collapse:collapse;}
+th{font-size:12px;font-weight:500;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.04em;padding:10px 1.25rem;text-align:left;background:var(--bg);border-bottom:1px solid var(--border);}
+td{padding:10px 1.25rem;font-size:14px;border-bottom:1px solid var(--border);}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:var(--bg);}
+.badge{display:inline-block;padding:3px 10px;border-radius:99px;font-size:12px;font-weight:500;}
+.badge-green{background:var(--accent-light);color:var(--primary);}
+.badge-red{background:var(--danger-light);color:var(--danger);}
+.badge-amber{background:var(--warning-light);color:var(--warning);}
+.badge-gray{background:var(--border);color:var(--text-muted);}
+.badge-gold{background:var(--gold-light);color:var(--gold);}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:200;align-items:center;justify-content:center;}
+.modal-overlay.open{display:flex;}
+.modal{background:var(--white);border-radius:16px;padding:1.5rem;width:100%;max-width:560px;max-height:92vh;overflow-y:auto;}
+.modal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;}
+.modal-title{font-size:17px;font-weight:600;}
+.modal-close{background:none;border:none;font-size:22px;cursor:pointer;color:var(--text-muted);line-height:1;}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.modal-footer{display:flex;gap:10px;justify-content:flex-end;margin-top:1.25rem;border-top:1px solid var(--border);padding-top:1.25rem;}
+.prop-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:1rem;}
+.prop-card{background:var(--white);border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+.prop-card-img{height:150px;background:linear-gradient(135deg,var(--primary) 0%,var(--accent) 100%);display:flex;align-items:center;justify-content:center;font-size:40px;position:relative;overflow:hidden;}
+.prop-card-img img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0;}
+.prop-card-body{padding:1rem;}
+.prop-card-name{font-weight:600;font-size:15px;margin-bottom:2px;}
+.prop-card-loc{font-size:13px;color:var(--text-muted);margin-bottom:2px;}
+.prop-card-landlord{font-size:12px;color:var(--text-muted);margin-bottom:8px;}
+.prop-card-footer{display:flex;align-items:center;justify-content:space-between;margin-top:10px;padding-top:10px;border-top:1px solid var(--border);}
+.prop-price{font-size:15px;font-weight:600;color:var(--primary);}
+.empty{text-align:center;padding:3rem;color:var(--text-muted);}
+.empty-icon{font-size:48px;margin-bottom:1rem;}
+.empty p{font-size:14px;}
+.page{display:none;}
+.page.active{display:block;}
+.search-bar{display:flex;gap:10px;margin-bottom:1rem;flex-wrap:wrap;}
+.search-bar input,.search-bar select{padding:9px 14px;border:1px solid var(--border);border-radius:8px;font-size:14px;font-family:'DM Sans',sans-serif;outline:none;}
+.search-bar input{flex:1;}
+.search-bar input:focus,.search-bar select:focus{border-color:var(--accent);}
+.report-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.5rem;}
+.report-card{background:var(--white);border:1px solid var(--border);border-radius:12px;padding:1.25rem;}
+.report-card h3{font-size:14px;font-weight:600;margin-bottom:1rem;color:var(--primary);}
+.report-row{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border);font-size:13px;}
+.report-row:last-child{border-bottom:none;}
+.report-row .val{font-weight:600;}
+.report-row .val.green{color:var(--primary);}
+.report-row .val.red{color:var(--danger);}
+.chart-container{position:relative;height:280px;}
+.btn-group{display:flex;gap:8px;flex-wrap:wrap;}
+.img-preview{width:100%;height:140px;border-radius:8px;border:2px dashed var(--border);display:flex;align-items:center;justify-content:center;margin-top:6px;overflow:hidden;cursor:pointer;background:var(--bg);}
+.img-preview img{width:100%;height:100%;object-fit:cover;}
+.img-preview span{font-size:13px;color:var(--text-muted);}
+.filter-bar{display:flex;gap:8px;margin-bottom:1rem;flex-wrap:wrap;}
+.filter-bar select{padding:8px 12px;border:1px solid var(--border);border-radius:8px;font-size:13px;font-family:'DM Sans',sans-serif;outline:none;}
+.success-toast{position:fixed;bottom:2rem;right:2rem;background:var(--primary);color:white;padding:12px 20px;border-radius:10px;font-size:14px;z-index:999;display:none;box-shadow:0 4px 20px rgba(0,0,0,0.2);}
+#public-page{display:none;}
+.pub-nav{background:var(--primary);padding:1rem 2rem;display:flex;align-items:center;justify-content:space-between;}
+.pub-nav-logo{font-family:'DM Serif Display',serif;font-size:24px;color:white;}
+.pub-hero{background:linear-gradient(135deg,var(--primary) 0%,var(--primary-light) 60%,var(--accent) 100%);padding:5rem 2rem;text-align:center;}
+.pub-hero h1{font-family:'DM Serif Display',serif;font-size:48px;color:white;margin-bottom:1rem;}
+.pub-hero p{font-size:18px;color:rgba(255,255,255,0.8);margin-bottom:2rem;}
+.pub-search{display:flex;gap:10px;max-width:650px;margin:0 auto;flex-wrap:wrap;}
+.pub-search input,.pub-search select{padding:14px 18px;border-radius:10px;border:none;font-size:15px;font-family:'DM Sans',sans-serif;outline:none;background:white;}
+.pub-search input{flex:1;}
+.pub-section{padding:3rem 2rem;max-width:1200px;margin:0 auto;}
+.pub-section h2{font-family:'DM Serif Display',serif;font-size:32px;color:var(--text);margin-bottom:0.5rem;}
+.pub-section p{color:var(--text-muted);margin-bottom:2rem;}
+.pub-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1.5rem;}
+.pub-card{background:var(--white);border:1px solid var(--border);border-radius:16px;overflow:hidden;transition:transform 0.2s,box-shadow 0.2s;}
+.pub-card:hover{transform:translateY(-4px);box-shadow:0 12px 40px rgba(0,0,0,0.1);}
+.pub-card-img{height:200px;background:linear-gradient(135deg,var(--primary),var(--accent));display:flex;align-items:center;justify-content:center;font-size:56px;position:relative;overflow:hidden;}
+.pub-card-img img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0;}
+.pub-card-body{padding:1.25rem;}
+.pub-card-name{font-size:18px;font-weight:600;margin-bottom:4px;}
+.pub-card-loc{font-size:14px;color:var(--text-muted);margin-bottom:10px;}
+.pub-card-price{font-size:20px;font-weight:600;color:var(--primary);margin-bottom:10px;}
+.pub-card-details{display:flex;gap:12px;font-size:13px;color:var(--text-muted);flex-wrap:wrap;}
+.pub-footer{background:var(--primary);padding:2rem;text-align:center;color:rgba(255,255,255,0.7);font-size:14px;}
+.pub-filter-btn{padding:8px 16px;border-radius:99px;border:1.5px solid rgba(255,255,255,0.4);background:transparent;color:rgba(255,255,255,0.8);font-size:13px;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.2s;}
+.pub-filter-btn:hover{background:rgba(255,255,255,0.15);color:white;}
+.pub-filter-btn.active{background:white;color:var(--primary);border-color:white;font-weight:500;}
+@media(max-width:900px){.stats-grid{grid-template-columns:repeat(2,1fr);}.form-row{grid-template-columns:1fr;}.report-grid{grid-template-columns:1fr;}}
+@media print{
+  .sidebar,.nav-item,.page-header .btn-group,.page-header button,.btn-group,
+  #page-dashboard,#page-properties,#page-tenants,#page-payments,
+  #page-plots,#page-maintenance,#page-expenses,
+  .modal-overlay,.success-toast,#public-page,#auth-screen,
+  .search-bar,.filter-bar,nav,.logout-btn,.sidebar-footer,
+  button:not(.print-keep){display:none!important;}
+  .main{margin-left:0!important;padding:1rem!important;}
+  .page.active{display:block!important;}
+  .card{box-shadow:none!important;border:1px solid #ccc!important;}
+  .report-grid{grid-template-columns:1fr 1fr!important;}
+  body{background:white!important;}
+  .layout{display:block!important;}
+  #page-reports{display:block!important;}
+  .report-card{break-inside:avoid;}
+  table{width:100%!important;}
+  th,td{font-size:11px!important;padding:6px 8px!important;}
+}
+</style>
+</head>
+<body>
+
+<div class="success-toast" id="toast"></div>
+<div id="page-loader" style="position:fixed;inset:0;background:#1B4332;display:flex;align-items:center;justify-content:center;z-index:9999;">
+  <div style="text-align:center;color:white;">
+    <div style="font-family:'DM Serif Display',serif;font-size:32px;margin-bottom:8px;">Gandwi Agencies</div>
+    <div style="font-size:14px;opacity:0.7;">Loading...</div>
+  </div>
+</div>
+
+<!-- PUBLIC PAGE -->
+<div id="public-page" style="display:none;">
+  <nav class="pub-nav">
+    <div class="pub-nav-logo">Gandwi Agencies</div>
+    <div style="display:flex;gap:12px;align-items:center;">
+      <span style="color:rgba(255,255,255,0.7);font-size:14px;">+254 722 282 903</span>
+      <button class="btn btn-accent btn-sm" onclick="showLogin()">Agent Login</button>
+    </div>
+  </nav>
+  <div class="pub-hero">
+    <h1>Find Your Perfect Property</h1>
+    <p>Browse available rental houses and plots across Kenya</p>
+    <div class="pub-search">
+      <input type="text" id="pub-search" placeholder="Search by name or location..." oninput="filterPublic()" />
+      <select id="pub-type" onchange="filterPublic()">
+        <option value="">All Types</option>
+        <option value="house">🏠 Houses</option>
+        <option value="plot">🌿 Plots</option>
+      </select>
+      <select id="pub-county" onchange="filterPublic()">
+        <option value="">📍 All Counties</option>
+      </select>
+    </div>
+    <div style="display:flex;gap:8px;justify-content:center;margin-top:12px;flex-wrap:wrap;" id="pub-room-filters"></div>
+  </div>
+  <div class="pub-section">
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:0.5rem;">
+      <h2 style="margin-bottom:0;">Available Properties</h2>
+      <span id="pub-result-count" style="font-size:14px;color:var(--text-muted);"></span>
+    </div>
+    <p>All properties are verified and managed by Gandwi Agencies</p>
+    <div class="pub-grid" id="pub-grid"><div class="empty"><div class="empty-icon">🏠</div><p>Loading properties...</p></div></div>
+  </div>
+  <div style="background:var(--accent-light);padding:3rem 2rem;text-align:center;">
+    <h2 style="font-family:'DM Serif Display',serif;font-size:28px;color:var(--primary);margin-bottom:0.5rem;">Interested in a Property?</h2>
+    <p style="color:var(--text-muted);margin-bottom:1.5rem;">Contact us today and we'll help you find the right home or investment.</p>
+    <a href="tel:+254722282903" style="display:inline-block;background:var(--primary);color:white;padding:14px 32px;border-radius:10px;text-decoration:none;font-weight:500;font-size:15px;">📞 Call Us Now</a>
+  </div>
+  <footer class="pub-footer">
+    <p>© 2026 Gandwi Agencies · Nairobi, Kenya</p>
+    <p style="margin-top:4px;">mkabicii@gmail.com · +254 722 282 903</p>
+  </footer>
+</div>
+
+<!-- AUTH -->
+<div id="auth-screen" style="display:none;">
+  <div class="auth-card">
+    <div class="auth-logo">Gandwi Agencies</div>
+    <div class="auth-sub">Agent Management Portal</div>
+    <h2>Sign in</h2>
+    <div class="auth-error" id="auth-error"></div>
+    <div class="form-group"><label>Email</label><input type="email" id="login-email" /></div>
+    <div class="form-group"><label>Password</label><input type="password" id="login-password" /></div>
+    <button class="btn btn-primary" onclick="login()">Sign in</button>
+    <p style="font-size:13px;color:var(--text-muted);margin-top:1rem;text-align:center;">
+      No account? <span style="color:var(--accent);cursor:pointer;" onclick="showRegister()">Create one</span>
+      &nbsp;|&nbsp;<span style="color:var(--accent);cursor:pointer;" onclick="showPublic()">← Listings</span>
+    </p>
+    <div id="register-form" style="display:none;margin-top:1.5rem;border-top:1px solid var(--border);padding-top:1.5rem;">
+      <h2 style="margin-bottom:1rem;">Create account</h2>
+      <div class="form-group"><label>Full name</label><input type="text" id="reg-name" /></div>
+      <div class="form-group"><label>Email</label><input type="email" id="reg-email" /></div>
+      <div class="form-group"><label>Password</label><input type="password" id="reg-password" /></div>
+      <button class="btn btn-accent" style="width:100%" onclick="register()">Create account</button>
+    </div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app" style="display:none;">
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="sidebar-logo"><h1>Gandwi Agencies</h1><p>Management System</p></div>
+      <nav class="sidebar-nav">
+        <div class="nav-item active" onclick="showPage('dashboard',this)"><span class="icon">📊</span> Dashboard</div>
+        <div class="nav-item" onclick="showPage('properties',this)"><span class="icon">🏠</span> Properties</div>
+        <div class="nav-item" onclick="showPage('tenants',this)"><span class="icon">👥</span> Tenants</div>
+        <div class="nav-item" onclick="showPage('payments',this)"><span class="icon">💰</span> Rent Payments</div>
+        <div class="nav-item" onclick="showPage('plots',this)"><span class="icon">📋</span> Plot Sales</div>
+        <div class="nav-item" onclick="showPage('maintenance',this)"><span class="icon">🔧</span> Maintenance</div>
+        <div class="nav-item" onclick="showPage('expenses',this)"><span class="icon">📉</span> Expenses</div>
+        <div class="nav-item" onclick="showPage('reports',this)"><span class="icon">📈</span> Reports</div>
+        <div class="nav-item" onclick="showPublic()"><span class="icon">🌐</span> Public Page</div>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="user-info">
+          <div class="user-avatar" id="user-avatar">AM</div>
+          <div><div class="user-name" id="user-name">Loading...</div><div class="user-role">Admin</div></div>
+        </div>
+        <button class="logout-btn" onclick="logout()">Sign out</button>
+      </div>
+    </aside>
+
+    <main class="main">
+
+      <!-- DASHBOARD -->
+      <div id="page-dashboard" class="page active">
+        <div class="page-header">
+          <div><div class="page-title">Dashboard</div><div class="page-sub">Property overview</div></div>
+        </div>
+        <div class="stats-grid">
+          <div class="stat-card stat-primary"><div class="stat-label">Total Properties</div><div class="stat-value" id="stat-total">0</div><div class="stat-sub">Houses &amp; plots</div></div>
+          <div class="stat-card stat-accent"><div class="stat-label">Occupancy Rate</div><div class="stat-value" id="stat-occupancy">0%</div><div class="stat-sub" id="stat-occ-sub">0 occupied</div></div>
+          <div class="stat-card stat-gold"><div class="stat-label">Monthly Income</div><div class="stat-value" id="stat-income">KES 0</div><div class="stat-sub">This month</div></div>
+          <div class="stat-card stat-danger"><div class="stat-label">Open Maintenance</div><div class="stat-value" id="stat-maintenance">0</div><div class="stat-sub">Pending</div></div>
+        </div>
+        <div class="card">
+          <div class="card-header"><span class="card-title">Recent Payments</span></div>
+          <table><thead><tr><th>Date</th><th>Tenant</th><th>Month</th><th>Amount</th><th>Method</th><th>Reference</th><th>Receipt</th></tr></thead>
+          <tbody id="recent-payments-table"><tr><td colspan="7" style="text-align:center;color:var(--text-muted);padding:2rem">No payments yet</td></tr></tbody></table>
+        </div>
+      </div>
+
+      <!-- PROPERTIES -->
+      <div id="page-properties" class="page">
+        <div class="page-header">
+          <div><div class="page-title">Properties</div><div class="page-sub">Manage houses and plots</div></div>
+          <button class="btn btn-accent" onclick="openPropertyModal()">+ Add Property</button>
+        </div>
+        <div class="search-bar">
+          <input type="text" id="prop-search" placeholder="Search by name or location..." oninput="applyPropertyFilters()" />
+          <select onchange="applyPropertyFilters()" id="prop-filter-type"><option value="">All Types</option><option value="house">House</option><option value="plot">Plot</option></select>
+          <select onchange="applyPropertyFilters()" id="prop-filter-status"><option value="">All Status</option><option value="vacant">Vacant</option><option value="occupied">Occupied</option><option value="for_sale">For Sale</option></select>
+          <select onchange="applyPropertyFilters()" id="prop-filter-county"><option value="">All Counties</option></select>
+        </div>
+        <div class="prop-grid" id="properties-grid"><div class="empty"><div class="empty-icon">🏠</div><p>No properties yet.</p></div></div>
+      </div>
+
+      <!-- TENANTS -->
+      <div id="page-tenants" class="page">
+        <div class="page-header">
+          <div><div class="page-title">Tenants</div><div class="page-sub">Manage tenant records</div></div>
+          <button class="btn btn-accent" onclick="openTenantModal()">+ Add Tenant</button>
+        </div>
+        <div class="search-bar">
+          <input type="text" id="ten-search" placeholder="Search tenants..." oninput="applyTenantFilters()" />
+          <select id="ten-filter-landlord" onchange="applyTenantFilters()"><option value="">All Landlords</option></select>
+          <select id="ten-filter-county" onchange="applyTenantFilters()"><option value="">All Counties</option></select>
+          <select id="ten-filter-type" onchange="applyTenantFilters()"><option value="">All Room Types</option><option value="Single Room">Single Room</option><option value="Bedsitter">Bedsitter</option><option value="Double Room">Double Room</option><option value="1 Bedroom">1 Bedroom</option><option value="2 Bedroom">2 Bedroom</option><option value="3 Bedroom">3 Bedroom</option></select>
+        </div>
+        <div class="card"><table>
+          <thead><tr><th>Name</th><th>Phone</th><th>Property</th><th>Room Type</th><th>Landlord</th><th>County</th><th>Rent</th><th>Lease Start</th><th>Status</th><th>Action</th></tr></thead>
+          <tbody id="tenants-table"><tr><td colspan="10" style="text-align:center;color:var(--text-muted);padding:2rem">No tenants yet</td></tr></tbody>
+        </table></div>
+      </div>
+
+      <!-- PAYMENTS -->
+      <div id="page-payments" class="page">
+        <div class="page-header">
+          <div><div class="page-title">Rent Payments</div><div class="page-sub">Track payments and generate receipts</div></div>
+          <button class="btn btn-accent" onclick="openPaymentModal()">+ Record Payment</button>
+        </div>
+        <div class="card"><table>
+          <thead><tr><th>Date</th><th>Tenant</th><th>Property</th><th>Month</th><th>Amount (KES)</th><th>Method</th><th>Reference</th><th>Receipt</th></tr></thead>
+          <tbody id="payments-table"><tr><td colspan="8" style="text-align:center;color:var(--text-muted);padding:2rem">No payments recorded</td></tr></tbody>
+        </table></div>
+      </div>
+
+      <!-- PLOT SALES -->
+      <div id="page-plots" class="page">
+        <div class="page-header">
+          <div><div class="page-title">Plot Sales</div><div class="page-sub">Track buyers and payment plans</div></div>
+          <button class="btn btn-accent" onclick="openModal('plot-modal')">+ Add Sale</button>
+        </div>
+        <div class="card"><table>
+          <thead><tr><th>Buyer</th><th>Phone</th><th>Plot</th><th>Sale Price</th><th>Deposit</th><th>Balance</th><th>Status</th><th>Title Deed</th></tr></thead>
+          <tbody id="plots-table"><tr><td colspan="8" style="text-align:center;color:var(--text-muted);padding:2rem">No plot sales yet</td></tr></tbody>
+        </table></div>
+      </div>
+
+      <!-- MAINTENANCE -->
+      <div id="page-maintenance" class="page">
+        <div class="page-header">
+          <div><div class="page-title">Maintenance</div><div class="page-sub">Track repair requests</div></div>
+          <button class="btn btn-accent" onclick="openModal('maintenance-modal')">+ Add Request</button>
+        </div>
+        <div class="card"><table>
+          <thead><tr><th>Property</th><th>Description</th><th>Priority</th><th>Assigned To</th><th>Cost</th><th>Status</th><th>Action</th></tr></thead>
+          <tbody id="maintenance-table"><tr><td colspan="7" style="text-align:center;color:var(--text-muted);padding:2rem">No maintenance requests</td></tr></tbody>
+        </table></div>
+      </div>
+
+      <!-- EXPENSES -->
+      <div id="page-expenses" class="page">
+        <div class="page-header">
+          <div><div class="page-title">Expenses</div><div class="page-sub">Track all expenses</div></div>
+          <button class="btn btn-accent" onclick="openModal('expense-modal')">+ Add Expense</button>
+        </div>
+        <div class="card"><table>
+          <thead><tr><th>Date</th><th>Category</th><th>Amount (KES)</th><th>Property</th><th>Description</th></tr></thead>
+          <tbody id="expenses-table"><tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:2rem">No expenses yet</td></tr></tbody>
+        </table></div>
+      </div>
+
+      <!-- REPORTS -->
+      <div id="page-reports" class="page">
+        <div class="page-header">
+          <div><div class="page-title">Reports</div><div class="page-sub">Monthly, yearly and tenant summaries</div></div>
+          <div class="btn-group">
+            <select id="report-year" style="padding:8px 12px;border:1px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:14px;"></select>
+            <select id="report-month" style="padding:8px 12px;border:1px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:14px;">
+              <option value="1">January</option><option value="2">February</option><option value="3">March</option><option value="4">April</option><option value="5">May</option><option value="6">June</option>
+              <option value="7">July</option><option value="8">August</option><option value="9">September</option><option value="10">October</option><option value="11">November</option><option value="12">December</option>
+            </select>
+            <button class="btn btn-accent" onclick="loadMonthlyReport()">Monthly Report</button>
+            <button class="btn btn-outline" onclick="loadYearlyReport()">Yearly Report</button>
+            <button class="btn btn-gold" onclick="loadTenantReport()">Tenant Report</button>
+          </div>
+        </div>
+
+        <!-- MONTHLY REPORT -->
+        <div id="monthly-report" style="display:none;">
+          <div style="display:flex;justify-content:flex-end;margin-bottom:1rem;gap:8px;">
+            <button class="btn btn-outline btn-sm" onclick="printReport('payments')">🖨 Print Payments</button>
+            <button class="btn btn-outline btn-sm" onclick="printReport('tenants')">🖨 Print Tenants</button>
+            <button class="btn btn-outline btn-sm" onclick="printReport('properties')">🖨 Print Properties</button>
+          </div>
+          <div class="report-grid">
+            <div class="report-card">
+              <h3>💰 Income Summary</h3>
+              <div class="report-row"><span>Rent Collected</span><span class="val green" id="rpt-rent">KES 0</span></div>
+              <div class="report-row"><span>Plot Revenue</span><span class="val green" id="rpt-plot">KES 0</span></div>
+              <div class="report-row"><span>Total Expenses</span><span class="val red" id="rpt-exp">KES 0</span></div>
+              <div class="report-row"><span>Maintenance Costs</span><span class="val red" id="rpt-maint-cost">KES 0</span></div>
+              <div class="report-row" style="font-weight:600;font-size:15px;margin-top:4px;"><span>Net Revenue</span><span class="val green" id="rpt-net">KES 0</span></div>
+            </div>
+            <div class="report-card">
+              <h3>🏠 Properties Summary</h3>
+              <div class="report-row"><span>Total Properties</span><span class="val" id="rpt-total-prop">0</span></div>
+              <div class="report-row"><span>Occupied / Under Lease</span><span class="val green" id="rpt-occupied">0</span></div>
+              <div class="report-row"><span>Vacant / Not Leased</span><span class="val red" id="rpt-vacant">0</span></div>
+              <div class="report-row"><span>Active Tenants</span><span class="val" id="rpt-tenants">0</span></div>
+              <div class="report-row"><span>Payments Received</span><span class="val" id="rpt-pay-count">0</span></div>
+            </div>
+            <div class="report-card">
+              <h3>📋 Plot Sales</h3>
+              <div class="report-row"><span>Plots Sold (Completed)</span><span class="val green" id="rpt-plots-sold">0</span></div>
+              <div class="report-row"><span>Plots In Pipeline</span><span class="val" id="rpt-plots-pipe">0</span></div>
+              <div class="report-row"><span>Plot Revenue</span><span class="val green" id="rpt-plot-rev">KES 0</span></div>
+            </div>
+            <div class="report-card">
+              <h3>💳 Payment Breakdown</h3>
+              <div id="rpt-payments-list" style="font-size:13px;max-height:200px;overflow-y:auto;"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- YEARLY REPORT -->
+        <div id="yearly-report" style="display:none;">
+          <div style="display:flex;justify-content:flex-end;margin-bottom:1rem;gap:8px;">
+            <button class="btn btn-outline btn-sm" onclick="printReport('payments')">🖨 Print Payments</button>
+            <button class="btn btn-outline btn-sm" onclick="printReport('tenants')">🖨 Print Tenants</button>
+            <button class="btn btn-outline btn-sm" onclick="printReport('properties')">🖨 Print Properties</button>
+          </div>
+          <div class="report-grid" style="grid-template-columns:1fr 1fr 1fr;">
+            <div class="report-card">
+              <h3>📅 Year Summary</h3>
+              <div class="report-row"><span>Total Rent Collected</span><span class="val green" id="yr-rent">KES 0</span></div>
+              <div class="report-row"><span>Total Plot Revenue</span><span class="val green" id="yr-plot">KES 0</span></div>
+              <div class="report-row"><span>Total Expenses</span><span class="val red" id="yr-exp">KES 0</span></div>
+              <div class="report-row"><span>Gross Revenue</span><span class="val green" id="yr-gross">KES 0</span></div>
+              <div class="report-row" style="font-weight:600;font-size:15px;margin-top:4px;"><span>Net Revenue</span><span class="val green" id="yr-net">KES 0</span></div>
+            </div>
+            <div class="report-card">
+              <h3>🏠 Properties</h3>
+              <div class="report-row"><span>Total Properties</span><span class="val" id="yr-props">0</span></div>
+              <div class="report-row"><span>Plots Sold</span><span class="val green" id="yr-plots">0</span></div>
+            </div>
+            <div class="report-card">
+              <h3>📈 Best Month</h3>
+              <div id="yr-best-month"></div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header"><span class="card-title">Monthly Income vs Expenses</span>
+            </div>
+            <div style="padding:1.25rem;"><div class="chart-container"><canvas id="yearly-chart"></canvas></div></div>
+          </div>
+        </div>
+
+        <!-- TENANT REPORT -->
+        <div id="tenant-report" style="display:none;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;flex-wrap:wrap;gap:8px;">
+            <div class="btn-group">
+              <select id="trpt-landlord" onchange="filterTenantReport()" style="padding:8px 12px;border:1px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;"><option value="">All Landlords</option></select>
+              <select id="trpt-county" onchange="filterTenantReport()" style="padding:8px 12px;border:1px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;"><option value="">All Counties</option></select>
+              <select id="trpt-type" onchange="filterTenantReport()" style="padding:8px 12px;border:1px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;"><option value="">All Room Types</option><option>Single Room</option><option>Bedsitter</option><option>Double Room</option><option>1 Bedroom</option><option>2 Bedroom</option><option>3 Bedroom</option></select>
+              <select id="trpt-property" onchange="filterTenantReport()" style="padding:8px 12px;border:1px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;"><option value="">All Properties</option></select>
+            </div>
+            <button class="btn btn-outline btn-sm" onclick="printReport('tenants')">🖨 Print Tenants</button>
+            <button class="btn btn-outline btn-sm" onclick="printReport('properties')">🖨 Print Properties</button>
+            <button class="btn btn-outline btn-sm" onclick="printReport('payments')">🖨 Print Payments</button>
+          </div>
+          <div class="card">
+            <div class="card-header"><span class="card-title" id="trpt-title">Tenant Report</span><span id="trpt-count" style="font-size:13px;color:var(--text-muted);"></span></div>
+            <table>
+              <thead><tr><th>Name</th><th>Phone</th><th>Property</th><th>Room Type</th><th>Landlord</th><th>County</th><th>Monthly Rent</th><th>Lease Start</th><th>Status</th></tr></thead>
+              <tbody id="trpt-table"></tbody>
+            </table>
+          </div>
+          <div class="report-card" style="max-width:400px;">
+            <h3>Summary</h3>
+            <div class="report-row"><span>Total Tenants</span><span class="val" id="trpt-total">0</span></div>
+            <div class="report-row"><span>Total Monthly Rent</span><span class="val green" id="trpt-total-rent">KES 0</span></div>
+          </div>
+        </div>
+
+        <div id="reports-empty" style="text-align:center;padding:3rem;color:var(--text-muted);">
+          <div style="font-size:48px;margin-bottom:1rem;">📈</div>
+          <p>Select a report type above to get started</p>
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<!-- PROPERTY MODAL -->
+<div class="modal-overlay" id="property-modal">
+  <div class="modal">
+    <div class="modal-header"><span class="modal-title">Add Property</span><button class="modal-close" onclick="closeModal('property-modal')">×</button></div>
+    <div class="form-row">
+      <div class="form-group"><label>Property Name</label><input type="text" id="prop-name" placeholder="e.g. Ruaka House A1" /></div>
+      <div class="form-group"><label>Type</label><select id="prop-type"><option value="house">House / Rental</option><option value="plot">Plot</option></select></div>
+    </div>
+    <div class="form-group"><label>Landlord Name</label><input type="text" id="prop-landlord" placeholder="e.g. Antony Mutwiri" /></div>
+    <div class="form-row">
+      <div class="form-group"><label>Location / Area</label><input type="text" id="prop-location" placeholder="e.g. Ruaka, Kiambu" /></div>
+      <div class="form-group"><label>County</label><select id="prop-county">
+<option>Embu</option><option>Isiolo</option><option>Kajiado</option><option>Kiambu</option>
+        <option>Kilifi</option><option>Kirinyaga</option><option>Kisii</option><option>Kisumu</option>
+        <option>Kitui</option><option>Kwale</option><option>Laikipia</option><option>Machakos</option>
+        <option>Makueni</option><option>Malindi</option><option>Marsabit</option><option>Meru</option>
+        <option>Mombasa</option><option>Murang'a</option><option>Nairobi</option><option>Nakuru</option>
+        <option>Nandi</option><option>Narok</option><option>Nyeri</option><option>Samburu</option>
+        <option>Siaya</option><option>Thika</option><option>Uasin Gishu</option>
+      </select></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Room / Property Type</label><select id="prop-room-type">
+        <option value="">Select type</option>
+        <option>Single Room</option><option>Bedsitter</option><option>Double Room</option>
+        <option>1 Bedroom</option><option>2 Bedroom</option><option>3 Bedroom</option>
+        <option>4 Bedroom</option><option>Bungalow</option><option>Maisonette</option><option>Plot</option>
+      </select></div>
+      <div class="form-group"><label>Units Available</label><input type="number" id="prop-size" placeholder="e.g. 5" /></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Monthly Rent (KES)</label><input type="number" id="prop-rent" placeholder="e.g. 15000" /></div>
+      <div class="form-group"><label>Sale Price (KES)</label><input type="number" id="prop-price" placeholder="e.g. 500000" /></div>
+    </div>
+    <div class="form-group"><label>Status</label><select id="prop-status"><option value="vacant">Vacant</option><option value="occupied">Occupied</option><option value="for_sale">For Sale</option></select></div>
+    <div class="form-group"><label>Description</label><textarea id="prop-desc" rows="2" placeholder="Additional details..."></textarea></div>
+    <div class="form-group">
+      <label>Property Image</label>
+      <div class="img-preview" id="prop-img-preview" onclick="document.getElementById('prop-img-file').click()">
+        <span>📷 Click to upload image</span>
+      </div>
+      <input type="file" id="prop-img-file" accept="image/jpeg,image/png,image/webp" style="display:none" onchange="previewImage(this)" />
+      <p style="font-size:12px;color:var(--text-muted);margin-top:4px;">Max size: 1MB. JPG, PNG or WebP.</p>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('property-modal')">Cancel</button>
+      <button class="btn btn-accent" onclick="saveProperty()">Save Property</button>
+    </div>
+  </div>
+</div>
+
+<!-- TENANT MODAL -->
+<div class="modal-overlay" id="tenant-modal">
+  <div class="modal">
+    <div class="modal-header"><span class="modal-title">Add Tenant</span><button class="modal-close" onclick="closeModal('tenant-modal')">×</button></div>
+    <div class="form-row">
+      <div class="form-group"><label>Full Name</label><input type="text" id="ten-name" placeholder="John Kamau" /></div>
+      <div class="form-group"><label>Phone</label><input type="text" id="ten-phone" placeholder="0712345678" /></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Email (optional)</label><input type="email" id="ten-email" /></div>
+      <div class="form-group"><label>ID Number</label><input type="text" id="ten-id" /></div>
+    </div>
+    <div class="form-group"><label>Property</label>
+      <select id="ten-property" onchange="autoFillRent()">
+        <option value="">-- Select property --</option>
+      </select>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Monthly Rent (KES)</label><input type="number" id="ten-rent" placeholder="Auto-filled from property" /></div>
+      <div class="form-group"><label>Deposit Paid (KES)</label><input type="number" id="ten-deposit" placeholder="0" /></div>
+    </div>
+    <div class="form-group"><label>Lease Start Date</label><input type="date" id="ten-start" /></div>
+    <div class="form-group">
+      <label style="display:flex;align-items:center;gap:8px;">
+        <input type="checkbox" id="ten-has-end" onchange="toggleLeaseEnd()" /> Has fixed lease end date
+      </label>
+    </div>
+    <div class="form-group" id="ten-end-group" style="display:none;"><label>Lease End Date</label><input type="date" id="ten-end" /></div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('tenant-modal')">Cancel</button>
+      <button class="btn btn-accent" onclick="saveTenant()">Save Tenant</button>
+    </div>
+  </div>
+</div>
+
+<!-- PAYMENT MODAL -->
+<div class="modal-overlay" id="payment-modal">
+  <div class="modal">
+    <div class="modal-header"><span class="modal-title">Record Payment</span><button class="modal-close" onclick="closeModal('payment-modal')">×</button></div>
+    <div class="form-group"><label>Tenant</label>
+      <select id="pay-tenant" onchange="fillPaymentDefaults()">
+        <option value="">-- Select tenant --</option>
+      </select>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Amount (KES)</label><input type="number" id="pay-amount" placeholder="Auto-filled from tenant" /></div>
+      <div class="form-group"><label>Payment Date</label><input type="date" id="pay-date" /></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Month Paid For</label><input type="month" id="pay-month" /></div>
+      <div class="form-group"><label>Payment Method</label>
+        <select id="pay-method" onchange="togglePayRef()">
+          <option value="mpesa">M-Pesa</option><option value="cash">Cash</option><option value="bank">Bank Transfer</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group" id="mpesa-ref-group"><label>M-Pesa Reference</label><input type="text" id="pay-mpesa" placeholder="e.g. QGH7XXXXXX" /></div>
+    <div class="form-group" id="bank-ref-group" style="display:none;"><label>Bank / Cheque Reference</label><input type="text" id="pay-bank-ref" placeholder="e.g. CHQ-001234" /></div>
+    <div class="form-group" id="cash-ref-group" style="display:none;"><label>Received By</label><input type="text" id="pay-cash-by" placeholder="Name of person who received cash" /></div>
+    <div class="form-group"><label>Notes (optional)</label><textarea id="pay-notes" rows="2"></textarea></div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('payment-modal')">Cancel</button>
+      <button class="btn btn-accent" onclick="savePayment()">Record Payment</button>
+    </div>
+  </div>
+</div>
+
+<!-- PLOT MODAL -->
+<div class="modal-overlay" id="plot-modal">
+  <div class="modal">
+    <div class="modal-header"><span class="modal-title">Add Plot Sale</span><button class="modal-close" onclick="closeModal('plot-modal')">×</button></div>
+    <div class="form-group"><label>Plot / Property</label><select id="plot-property"><option value="">-- Select plot --</option></select></div>
+    <div class="form-row">
+      <div class="form-group"><label>Buyer Name</label><input type="text" id="plot-buyer" /></div>
+      <div class="form-group"><label>Buyer Phone</label><input type="text" id="plot-phone" /></div>
+    </div>
+    <div class="form-group"><label>Buyer ID Number</label><input type="text" id="plot-id" /></div>
+    <div class="form-row">
+      <div class="form-group"><label>Sale Price (KES)</label><input type="number" id="plot-price" /></div>
+      <div class="form-group"><label>Deposit Paid (KES)</label><input type="number" id="plot-deposit" /></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Status</label><select id="plot-status"><option value="deposit_paid">Deposit Paid</option><option value="installments">Installments</option><option value="completed">Completed</option></select></div>
+      <div class="form-group"><label>Title Deed</label><select id="plot-deed"><option value="pending">Pending</option><option value="processing">Processing</option><option value="transferred">Transferred</option></select></div>
+    </div>
+    <div class="form-group"><label>Sale Date</label><input type="date" id="plot-date" /></div>
+    <div class="form-group"><label>Notes</label><textarea id="plot-notes" rows="2"></textarea></div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('plot-modal')">Cancel</button>
+      <button class="btn btn-accent" onclick="savePlotSale()">Save Sale</button>
+    </div>
+  </div>
+</div>
+
+<!-- MAINTENANCE MODAL -->
+<div class="modal-overlay" id="maintenance-modal">
+  <div class="modal">
+    <div class="modal-header"><span class="modal-title">Add Maintenance Request</span><button class="modal-close" onclick="closeModal('maintenance-modal')">×</button></div>
+    <div class="form-group"><label>Property</label><select id="maint-property"><option value="">-- Select property --</option></select></div>
+    <div class="form-group"><label>Description</label><textarea id="maint-desc" rows="3" placeholder="Describe the issue..."></textarea></div>
+    <div class="form-row">
+      <div class="form-group"><label>Priority</label><select id="maint-priority"><option value="low">Low</option><option value="medium" selected>Medium</option><option value="high">High</option></select></div>
+      <div class="form-group"><label>Assigned To</label><input type="text" id="maint-assigned" placeholder="Contractor name" /></div>
+    </div>
+    <div class="form-group"><label>Estimated Cost (KES)</label><input type="number" id="maint-cost" /></div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('maintenance-modal')">Cancel</button>
+      <button class="btn btn-accent" onclick="saveMaintenance()">Save Request</button>
+    </div>
+  </div>
+</div>
+
+<!-- EXPENSE MODAL -->
+<div class="modal-overlay" id="expense-modal">
+  <div class="modal">
+    <div class="modal-header"><span class="modal-title">Add Expense</span><button class="modal-close" onclick="closeModal('expense-modal')">×</button></div>
+    <div class="form-row">
+      <div class="form-group"><label>Category</label><select id="exp-category">
+        <option>Repairs</option><option>Utilities</option><option>Insurance</option><option>Legal Fees</option>
+        <option>Agent Commission</option><option>Security</option><option>Cleaning</option><option>Other</option>
+      </select></div>
+      <div class="form-group"><label>Amount (KES)</label><input type="number" id="exp-amount" /></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Date</label><input type="date" id="exp-date" /></div>
+      <div class="form-group"><label>Property (optional)</label><select id="exp-property"><option value="">General</option></select></div>
+    </div>
+    <div class="form-group"><label>Description</label><textarea id="exp-desc" rows="2"></textarea></div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('expense-modal')">Cancel</button>
+      <button class="btn btn-accent" onclick="saveExpense()">Save Expense</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const API='http://localhost:8000/api';
+let token=localStorage.getItem('pm_token');
+let userName=localStorage.getItem('pm_name')||'';
+let allProperties=[],allTenants=[],allPayments=[],yearlyChart=null,propImgBase64=null,tenantReportData=[];
+
+window.onload=()=>{
+  loadPublicPage();
+};
+
+function setYears(){
+  const sel=document.getElementById('report-year');
+  if(!sel)return;
+  const yr=new Date().getFullYear();
+  for(let y=yr;y>=yr-5;y--){const o=document.createElement('option');o.value=y;o.textContent=y;sel.appendChild(o);}
+  const rm=document.getElementById('report-month');
+  if(rm)rm.value=new Date().getMonth()+1;
+}
+
+function setTodayDates(){
+  try{
+    const today=new Date().toISOString().split('T')[0];
+    const month=today.substring(0,7);
+    ['pay-date','plot-date','exp-date','ten-start'].forEach(id=>{const el=document.getElementById(id);if(el)el.value=today;});
+    const pm=document.getElementById('pay-month');if(pm)pm.value=month;
+  }catch(e){}
+}
+
+function toast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.style.display='block';
+  setTimeout(()=>t.style.display='none',3000);
+}
+
+// IMAGE PREVIEW
+function previewImage(input){
+  const file=input.files[0];
+  if(!file)return;
+  if(file.size > 1024*1024){alert('Image too large. Please use an image under 1MB.');input.value='';return;}
+  const reader=new FileReader();
+  reader.onload=e=>{
+    propImgBase64=e.target.result;
+    document.getElementById('prop-img-preview').innerHTML=`<img src="${e.target.result}" alt="preview"/>`;
+  };
+  reader.readAsDataURL(file);
+}
+
+let editImgBase64=null;
+function previewEditImage(input){
+  const file=input.files[0];
+  if(!file)return;
+  if(file.size > 1024*1024){alert('Image too large. Please use an image under 1MB.');input.value='';return;}
+  const reader=new FileReader();
+  reader.onload=e=>{
+    editImgBase64=e.target.result;
+    document.getElementById('edit-prop-img-preview').innerHTML=`<img src="${e.target.result}" alt="preview"/>`;
+  };
+  reader.readAsDataURL(file);
+}
+
+function editProperty(id){
+  const p=allProperties.find(pr=>pr.id===id);
+  if(!p)return;
+  editImgBase64=null;
+  document.getElementById('edit-prop-id').value=p.id;
+  document.getElementById('edit-prop-name').value=p.name||'';
+  document.getElementById('edit-prop-type').value=p.type||'house';
+  document.getElementById('edit-prop-landlord').value=p.landlord_name||'';
+  document.getElementById('edit-prop-location').value=p.location||'';
+  document.getElementById('edit-prop-county').value=p.county||'Nairobi';
+  document.getElementById('edit-prop-room-type').value=p.room_type||'';
+  document.getElementById('edit-prop-units').value=p.size_sqft||'';
+  document.getElementById('edit-prop-rent').value=p.rent_amount||'';
+  document.getElementById('edit-prop-price').value=p.sale_price||'';
+  document.getElementById('edit-prop-status').value=p.status||'vacant';
+  document.getElementById('edit-prop-desc').value=p.description||'';
+  const preview=document.getElementById('edit-prop-img-preview');
+  if(p.image_url){preview.innerHTML=`<img src="${p.image_url}" alt="current"/>"`;}
+  else{preview.innerHTML='<span>📷 Click to upload image</span>';}
+  document.getElementById('edit-property-modal').classList.add('open');
+}
+
+async function updateProperty(){
+  const id=document.getElementById('edit-prop-id').value;
+  const data={
+    name:document.getElementById('edit-prop-name').value.trim(),
+    type:document.getElementById('edit-prop-type').value,
+    location:document.getElementById('edit-prop-location').value.trim(),
+    county:document.getElementById('edit-prop-county').value,
+    landlord_name:document.getElementById('edit-prop-landlord').value.trim()||null,
+    room_type:document.getElementById('edit-prop-room-type').value||null,
+    size_sqft:parseFloat(document.getElementById('edit-prop-units').value)||null,
+    rent_amount:parseFloat(document.getElementById('edit-prop-rent').value)||null,
+    sale_price:parseFloat(document.getElementById('edit-prop-price').value)||null,
+    status:document.getElementById('edit-prop-status').value,
+    description:document.getElementById('edit-prop-desc').value.trim()||null,
+    image_url:editImgBase64||(allProperties.find(p=>p.id==id)?.image_url)||null,
+  };
+  if(!data.name||!data.location){alert('Please fill in name and location');return;}
+  try{
+    const res=await fetch(`${API}/properties/${id}`,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});
+    if(!res.ok)throw new Error('Failed to update');
+    closeModal('edit-property-modal');
+    await loadProperties();
+    loadDashboard();
+    toast('✅ Property updated!');
+  }catch(e){alert('Error: '+e.message);}
+}
+
+// PUBLIC PAGE
+async function loadPublicPage(){
+  try{
+    document.getElementById('public-page').style.display='block';
+    document.getElementById('auth-screen').style.display='none';
+    document.getElementById('app').style.display='none';
+  }catch(e){console.error('Display error:',e);return;}
+  const grid=document.getElementById('pub-grid');
+  if(grid)grid.innerHTML='<div class="empty"><div class="empty-icon">🏠</div><p>Loading properties...</p></div>';
+  try{
+    const res=await fetch(`${API}/public/properties`);
+    if(!res.ok)throw new Error('Server error '+res.status);
+    const props=await res.json();
+    window._pubProps=Array.isArray(props)?props:[];
+    // Fixed county list - all Kenyan counties relevant to the system
+    const allCounties=[
+      'Embu','Isiolo','Kajiado','Kiambu','Kilifi','Kirinyaga','Kisii','Kisumu',
+      'Kitui','Kwale','Laikipia','Machakos','Makueni','Malindi','Marsabit',
+      'Meru','Mombasa','Murang\'a','Nairobi','Nakuru','Nandi','Narok',
+      'Nyeri','Samburu','Siaya','Thika','Uasin Gishu'
+    ];
+    const countySel=document.getElementById('pub-county');
+    if(countySel){
+      countySel.innerHTML='<option value="">📍 All Counties</option>'+
+        allCounties.map(c=>`<option value="${c}">${c}</option>`).join('');
+    }
+    // Populate room type quick filters
+    const roomTypes=[...new Set(window._pubProps.map(p=>p.room_type).filter(Boolean))].sort();
+    const roomFilters=document.getElementById('pub-room-filters');
+    if(roomFilters && roomTypes.length>0){
+      const allBtn=document.createElement('button');
+      allBtn.textContent='All';
+      allBtn.className='pub-filter-btn active';
+      allBtn.id='rf-all';
+      allBtn.onclick=function(){filterByRoom('');};
+      roomFilters.innerHTML='';
+      roomFilters.appendChild(allBtn);
+      roomTypes.forEach(function(r){
+        const btn=document.createElement('button');
+        btn.textContent=r;
+        btn.className='pub-filter-btn';
+        btn.id='rf-'+r.replace(/[^a-z0-9]/gi,'_');
+        btn.onclick=function(){filterByRoom(r);};
+        roomFilters.appendChild(btn);
+      });
+    }
+    renderPublicGrid(window._pubProps);
+    // Update result count
+    const countEl=document.getElementById('pub-result-count');
+    if(countEl)countEl.textContent=`${window._pubProps.length} propert${window._pubProps.length===1?'y':'ies'} available`;
+  }catch(e){
+    console.error('Public page error:',e);
+    if(grid)grid.innerHTML=`<div class="empty"><div class="empty-icon">⚠️</div><p>Could not load properties.<br>Please ensure the server is running at localhost:8000</p></div>`;
+  }finally{
+    const loader=document.getElementById('page-loader');
+    if(loader)loader.style.display='none';
+  }
+}
+
+function renderPublicGrid(props){
+  const grid=document.getElementById('pub-grid');
+  if(!props||props.length===0){grid.innerHTML='<div class="empty"><div class="empty-icon">🏠</div><p>No available properties at the moment.</p></div>';return;}
+  grid.innerHTML=props.map(p=>`
+    <div class="pub-card">
+      <div class="pub-card-img">
+        ${p.image_url?`<img src="${p.image_url}" alt="${p.name}"/>`:''}
+        <span style="${p.image_url?'display:none':''}">${p.type==='plot'?'🌿':'🏠'}</span>
+      </div>
+      <div class="pub-card-body">
+        <div class="pub-card-name">${p.name}</div>
+        <div class="pub-card-loc">📍 ${p.location}, ${p.county}</div>
+        <div class="pub-card-price">${p.rent_amount?'KES '+p.rent_amount.toLocaleString()+'/mo':p.sale_price?'KES '+p.sale_price.toLocaleString()+' (Sale)':'Price on request'}</div>
+        <div class="pub-card-details">
+          ${p.room_type?`<span>🏠 ${p.room_type}</span>`:''}
+          ${p.size_sqft?`<span>🏠 ${p.size_sqft} units</span>`:''}
+          <span class="badge ${p.status==='vacant'?'badge-green':'badge-gold'}">${p.status==='vacant'?'Available':'For Sale'}</span>
+        </div>
+        ${p.description?`<p style="font-size:13px;color:var(--text-muted);margin-top:8px;">${p.description}</p>`:''}
+        <a href="tel:+254722282903" style="display:block;margin-top:12px;background:var(--primary);color:white;padding:10px;border-radius:8px;text-align:center;text-decoration:none;font-size:14px;font-weight:500;">📞 Enquire Now</a>
+      </div>
+    </div>`).join('');
+}
+
+let activeRoomFilter='';
+
+function filterByRoom(room){
+  activeRoomFilter=room;
+  // Update button styles
+  document.querySelectorAll('.pub-filter-btn').forEach(b=>b.classList.remove('active'));
+  const btnId=room?`rf-${room.replace(/\s/g,'_')}`:'rf-all';
+  const btn=document.getElementById(btnId);
+  if(btn)btn.classList.add('active');
+  filterPublic();
+}
+
+function filterPublic(){
+  const q=document.getElementById('pub-search').value.toLowerCase().trim();
+  const t=document.getElementById('pub-type').value;
+  const c=document.getElementById('pub-county').value;
+  const r=activeRoomFilter;
+  const props=window._pubProps||[];
+  const filtered=props.filter(p=>{
+    const matchQ=!q||
+      (p.name&&p.name.toLowerCase().includes(q))||
+      (p.location&&p.location.toLowerCase().includes(q))||
+      (p.county&&p.county.toLowerCase().includes(q))||
+      (p.description&&p.description.toLowerCase().includes(q));
+    const matchT=!t||p.type===t;
+    const matchC=!c||p.county===c;
+    const matchR=!r||p.room_type===r;
+    return matchQ&&matchT&&matchC&&matchR;
+  });
+  // Show count
+  const countEl=document.getElementById('pub-result-count');
+  if(countEl)countEl.textContent=`${filtered.length} propert${filtered.length===1?'y':'ies'} found`;
+  renderPublicGrid(filtered);
+}
+
+function showLogin(){
+  document.getElementById('public-page').style.display='none';
+  document.getElementById('auth-screen').style.display='flex';
+  const loader=document.getElementById('page-loader');
+  if(loader)loader.style.display='none';
+}
+function showPublic(){loadPublicPage();}
+function showRegister(){const rf=document.getElementById('register-form');rf.style.display=rf.style.display==='none'?'block':'none';}
+
+// AUTH
+async function login(){
+  const email=document.getElementById('login-email').value.trim();
+  const password=document.getElementById('login-password').value;
+  if(!email||!password){showAuthError('Please enter email and password');return;}
+  try{
+    const res=await fetch(`${API}/auth/login`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,password})});
+    const data=await res.json();
+    if(!res.ok)throw new Error(data.detail||'Login failed');
+    token=data.token;userName=data.name;
+    localStorage.setItem('pm_token',token);localStorage.setItem('pm_name',userName);
+    showApp();
+  }catch(e){showAuthError(e.message);}
+}
+
+async function register(){
+  const name=document.getElementById('reg-name').value.trim();
+  const email=document.getElementById('reg-email').value.trim();
+  const password=document.getElementById('reg-password').value;
+  if(!name||!email||!password){showAuthError('Please fill all fields');return;}
+  try{
+    const res=await fetch(`${API}/auth/register`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name,email,password,role:'admin'})});
+    const data=await res.json();
+    if(!res.ok)throw new Error(data.detail||'Registration failed');
+    document.getElementById('login-email').value=email;
+    document.getElementById('login-password').value=password;
+    document.getElementById('register-form').style.display='none';
+    login();
+  }catch(e){showAuthError(e.message);}
+}
+
+function showAuthError(msg){const el=document.getElementById('auth-error');el.textContent=msg;el.style.display='block';}
+
+function logout(){
+  token=null;localStorage.removeItem('pm_token');localStorage.removeItem('pm_name');
+  document.getElementById('app').style.display='none';loadPublicPage();
+}
+
+function showApp(){
+  document.getElementById('auth-screen').style.display='none';
+  document.getElementById('public-page').style.display='none';
+  document.getElementById('app').style.display='block';
+  const initials=userName.split(' ').map(n=>n[0]).join('').substring(0,2).toUpperCase();
+  document.getElementById('user-avatar').textContent=initials;
+  document.getElementById('user-name').textContent=userName;
+  setYears();
+  setTodayDates();
+  loadAll();
+}
+
+async function loadAll(){
+  await loadProperties();
+  await loadTenants();
+  loadDashboard();loadPayments();loadPlotSales();loadMaintenance();loadExpenses();
+}
+
+function showPage(page,el){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById(`page-${page}`).classList.add('active');
+  if(el)el.classList.add('active');
+}
+
+// MODAL HELPERS
+function openModal(id){populateSelects();document.getElementById(id).classList.add('open');}
+function closeModal(id){document.getElementById(id).classList.remove('open');}
+
+// Open property modal - always reset form
+function openPropertyModal(){
+  propImgBase64=null;
+  document.getElementById('prop-img-preview').innerHTML='<span>📷 Click to upload image</span>';
+  ['prop-name','prop-landlord','prop-location','prop-desc','prop-size','prop-rent','prop-price'].forEach(id=>{document.getElementById(id).value='';});
+  document.getElementById('prop-type').value='house';
+  document.getElementById('prop-county').value='Nairobi';
+  document.getElementById('prop-status').value='vacant';
+  document.getElementById('prop-room-type').value='';
+  document.getElementById('property-modal').classList.add('open');
+}
+
+// Open tenant modal - always reset form
+function openTenantModal(){
+  ['ten-name','ten-phone','ten-email','ten-id','ten-rent','ten-deposit'].forEach(id=>{document.getElementById(id).value='';});
+  document.getElementById('ten-property').value='';
+  document.getElementById('ten-start').value=new Date().toISOString().split('T')[0];
+  document.getElementById('ten-end').value='';
+  document.getElementById('ten-has-end').checked=false;
+  document.getElementById('ten-end-group').style.display='none';
+  populateSelects();
+  document.getElementById('tenant-modal').classList.add('open');
+}
+
+// Open payment modal - always reset form
+function openPaymentModal(){
+  ['pay-amount','pay-mpesa','pay-bank-ref','pay-cash-by','pay-notes'].forEach(id=>{document.getElementById(id).value='';});
+  document.getElementById('pay-method').value='mpesa';
+  document.getElementById('pay-date').value=new Date().toISOString().split('T')[0];
+  document.getElementById('pay-month').value=new Date().toISOString().substring(0,7);
+  togglePayRef();
+  populateSelects();
+  document.getElementById('payment-modal').classList.add('open');
+}
+
+// Toggle lease end date
+function toggleLeaseEnd(){
+  const show=document.getElementById('ten-has-end').checked;
+  document.getElementById('ten-end-group').style.display=show?'block':'none';
+}
+
+// Auto-fill rent from property
+function autoFillRent(){
+  const propId=parseInt(document.getElementById('ten-property').value);
+  const prop=allProperties.find(p=>p.id===propId);
+  if(prop&&prop.rent_amount){document.getElementById('ten-rent').value=prop.rent_amount;}
+}
+
+// Toggle payment reference fields
+function togglePayRef(){
+  const method=document.getElementById('pay-method').value;
+  document.getElementById('mpesa-ref-group').style.display=method==='mpesa'?'block':'none';
+  document.getElementById('bank-ref-group').style.display=method==='bank'?'block':'none';
+  document.getElementById('cash-ref-group').style.display=method==='cash'?'block':'none';
+}
+
+// Fill payment defaults
+function fillPaymentDefaults(){
+  const id=parseInt(document.getElementById('pay-tenant').value);
+  const tenant=allTenants.find(t=>t.id===id);
+  if(tenant)document.getElementById('pay-amount').value=tenant.monthly_rent;
+}
+
+// DASHBOARD
+async function loadDashboard(){
+  try{
+    const res=await fetch(`${API}/dashboard`,{headers:{'Authorization':`Bearer ${token}`}});
+    const d=await res.json();
+    document.getElementById('stat-total').textContent=d.total_properties;
+    document.getElementById('stat-occupancy').textContent=d.occupancy_rate+'%';
+    document.getElementById('stat-occ-sub').textContent=`${d.occupied} occupied, ${d.vacant} vacant`;
+    document.getElementById('stat-income').textContent='KES '+d.monthly_income.toLocaleString();
+    document.getElementById('stat-maintenance').textContent=d.open_maintenance;
+    const tbody=document.getElementById('recent-payments-table');
+    if(!d.recent_payments||d.recent_payments.length===0){
+      tbody.innerHTML='<tr><td colspan="7" style="text-align:center;color:var(--text-muted);padding:2rem">No payments yet</td></tr>';
+    }else{
+      tbody.innerHTML=d.recent_payments.map(p=>`<tr>
+        <td>${p.id}</td><td>${p.month}</td>
+        <td>KES ${p.amount.toLocaleString()}</td>
+        <td><span class="badge badge-green">${p.method}</span></td>
+        <td>${p.mpesa_ref||'-'}</td>
+        <td colspan="2"><a href="${API}/receipts/${p.id}" target="_blank" class="btn btn-sm btn-outline">🖨 Receipt</a></td>
+      </tr>`).join('');
+    }
+  }catch(e){console.error('Dashboard error:',e);}
+}
+
+// PROPERTIES
+async function loadProperties(){
+  try{
+    const res=await fetch(`${API}/properties`);
+    allProperties=await res.json();
+    renderProperties(allProperties);
+    populateCountyFilter();
+  }catch(e){}
+}
+
+function populateCountyFilter(){
+  const counties=[...new Set(allProperties.map(p=>p.county).filter(Boolean))];
+  const sel=document.getElementById('prop-filter-county');
+  sel.innerHTML='<option value="">All Counties</option>'+counties.map(c=>`<option>${c}</option>`).join('');
+}
+
+function applyPropertyFilters(){
+  const q=document.getElementById('prop-search').value.toLowerCase();
+  const t=document.getElementById('prop-filter-type').value;
+  const s=document.getElementById('prop-filter-status').value;
+  const c=document.getElementById('prop-filter-county').value;
+  renderProperties(allProperties.filter(p=>
+    (!q||p.name.toLowerCase().includes(q)||p.location.toLowerCase().includes(q))&&
+    (!t||p.type===t)&&(!s||p.status===s)&&(!c||p.county===c)
+  ));
+}
+
+function renderProperties(props){
+  const grid=document.getElementById('properties-grid');
+  if(!props||props.length===0){grid.innerHTML='<div class="empty"><div class="empty-icon">🏠</div><p>No properties found.</p></div>';return;}
+  const sb={vacant:'badge-amber',occupied:'badge-green',for_sale:'badge-gold',sold:'badge-gray'};
+  grid.innerHTML=props.map(p=>`
+    <div class="prop-card">
+      <div class="prop-card-img">
+        ${p.image_url?`<img src="${p.image_url}" alt="${p.name}"/>`:''}
+        <span style="${p.image_url?'display:none':''}">${p.type==='plot'?'🌿':'🏠'}</span>
+      </div>
+      <div class="prop-card-body">
+        <div class="prop-card-name">${p.name}</div>
+        <div class="prop-card-loc">📍 ${p.location}, ${p.county}</div>
+        ${p.landlord_name?`<div class="prop-card-landlord">👤 ${p.landlord_name}</div>`:''}
+        ${p.room_type?`<div style="font-size:12px;color:var(--text-muted);margin-bottom:6px;">🏠 ${p.room_type}</div>`:''}
+        <span class="badge ${sb[p.status]||'badge-gray'}">${p.status.replace('_',' ')}</span>
+        <div class="prop-card-footer">
+          <div class="prop-price">KES ${(p.rent_amount||p.sale_price||0).toLocaleString()}</div>
+          <div style="display:flex;gap:6px;">
+            <button class="btn btn-sm btn-outline" onclick="editProperty(${p.id})">Edit</button>
+            <button class="btn btn-sm btn-danger" onclick="deleteProperty(${p.id})">Delete</button>
+          </div>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+async function saveProperty(){
+  const data={
+    name:document.getElementById('prop-name').value.trim(),
+    type:document.getElementById('prop-type').value,
+    location:document.getElementById('prop-location').value.trim(),
+    county:document.getElementById('prop-county').value,
+    landlord_name:document.getElementById('prop-landlord').value.trim()||null,
+    room_type:document.getElementById('prop-room-type').value||null,
+    size_sqft:parseFloat(document.getElementById('prop-size').value)||null,
+    rent_amount:parseFloat(document.getElementById('prop-rent').value)||null,
+    sale_price:parseFloat(document.getElementById('prop-price').value)||null,
+    status:document.getElementById('prop-status').value,
+    description:document.getElementById('prop-desc').value.trim()||null,
+    image_url:propImgBase64||null,
+  };
+  if(!data.name||!data.location){alert('Please fill in property name and location');return;}
+  try{
+    const res=await fetch(`${API}/properties`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});
+    if(!res.ok)throw new Error('Failed to save');
+    closeModal('property-modal');
+    await loadProperties();
+    loadDashboard();
+    toast('✅ Property saved successfully!');
+  }catch(e){alert('Error saving property: '+e.message);}
+}
+
+async function deleteProperty(id){
+  if(!confirm('Delete this property?'))return;
+  await fetch(`${API}/properties/${id}`,{method:'DELETE'});
+  await loadProperties();loadDashboard();
+  toast('Property deleted');
+}
+
+// TENANTS
+async function loadTenants(){
+  try{
+    const res=await fetch(`${API}/tenants`);
+    allTenants=await res.json();
+    renderTenants(allTenants);
+    populateTenantFilters();
+  }catch(e){}
+}
+
+function populateTenantFilters(){
+  const landlords=[...new Set(allProperties.map(p=>p.landlord_name).filter(Boolean))];
+  const allCountyList=['Embu','Isiolo','Kajiado','Kiambu','Kilifi','Kirinyaga','Kisii','Kisumu',
+    'Kitui','Kwale','Laikipia','Machakos','Makueni','Malindi','Marsabit','Meru','Mombasa',
+    "Murang'a",'Nairobi','Nakuru','Nandi','Narok','Nyeri','Samburu','Siaya','Thika','Uasin Gishu'];
+  document.getElementById('ten-filter-landlord').innerHTML='<option value="">All Landlords</option>'+landlords.map(l=>`<option>${l}</option>`).join('');
+  document.getElementById('ten-filter-county').innerHTML='<option value="">All Counties</option>'+allCountyList.map(c=>`<option>${c}</option>`).join('');
+}
+
+function applyTenantFilters(){
+  const q=document.getElementById('ten-search').value.toLowerCase();
+  const landlord=document.getElementById('ten-filter-landlord').value;
+  const county=document.getElementById('ten-filter-county').value;
+  const type=document.getElementById('ten-filter-type').value;
+  const filtered=allTenants.filter(t=>{
+    const prop=allProperties.find(p=>p.id===t.property_id);
+    return(!q||t.full_name.toLowerCase().includes(q)||t.phone.includes(q))&&
+      (!landlord||(prop&&prop.landlord_name===landlord))&&
+      (!county||(prop&&prop.county===county))&&
+      (!type||(prop&&prop.room_type===type));
+  });
+  renderTenants(filtered);
+}
+
+function renderTenants(tenants){
+  const tbody=document.getElementById('tenants-table');
+  if(!tenants||tenants.length===0){tbody.innerHTML='<tr><td colspan="10" style="text-align:center;color:var(--text-muted);padding:2rem">No tenants found</td></tr>';return;}
+  tbody.innerHTML=tenants.map(t=>{
+    const prop=allProperties.find(p=>p.id===t.property_id);
+    return`<tr>
+      <td><strong>${t.full_name}</strong></td><td>${t.phone}</td>
+      <td>${prop?prop.name:'Unknown'}</td>
+      <td>${prop&&prop.room_type?prop.room_type:'-'}</td>
+      <td>${prop&&prop.landlord_name?prop.landlord_name:'-'}</td>
+      <td>${prop?prop.county:'-'}</td>
+      <td>KES ${t.monthly_rent.toLocaleString()}</td>
+      <td>${t.lease_start||'-'}</td>
+      <td><span class="badge badge-green">${t.status}</span></td>
+      <td style="display:flex;gap:6px;">
+        <button class="btn btn-sm btn-outline" onclick="editTenant(${t.id})">Edit</button>
+        <button class="btn btn-sm btn-danger" onclick="deleteTenant(${t.id})">Remove</button>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+async function saveTenant(){
+  const propVal=document.getElementById('ten-property').value;
+  const rentVal=document.getElementById('ten-rent').value;
+  const nameVal=document.getElementById('ten-name').value.trim();
+  const phoneVal=document.getElementById('ten-phone').value.trim();
+  const idVal=document.getElementById('ten-id').value.trim();
+  if(!nameVal){alert('Please enter tenant full name');return;}
+  if(!phoneVal){alert('Please enter tenant phone number - it is mandatory');return;}
+  if(!idVal){alert('Please enter tenant ID number - it is mandatory');return;}
+  if(!propVal){alert('Please select a property');return;}
+  if(!rentVal){alert('Please enter monthly rent');return;}
+  const hasEnd=document.getElementById('ten-has-end').checked;
+  const data={
+    full_name:nameVal,
+    phone:phoneVal,
+    email:document.getElementById('ten-email').value.trim()||null,
+    id_number:document.getElementById('ten-id').value.trim()||null,
+    property_id:parseInt(propVal),
+    monthly_rent:parseFloat(rentVal),
+    deposit_paid:parseFloat(document.getElementById('ten-deposit').value)||0,
+    lease_start:document.getElementById('ten-start').value||null,
+    lease_end:hasEnd?document.getElementById('ten-end').value||null:null,
+  };
+  try{
+    const res=await fetch(`${API}/tenants`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});
+    if(!res.ok){const err=await res.json();throw new Error(err.detail||'Failed to save tenant');}
+    closeModal('tenant-modal');
+    await loadTenants();
+    loadDashboard();
+    toast('✅ Tenant added successfully!');
+  }catch(e){alert('Error saving tenant: '+e.message);}
+}
+
+async function deleteTenant(id){
+  if(!confirm('Remove this tenant?'))return;
+  await fetch(`${API}/tenants/${id}`,{method:'DELETE'});
+  await loadTenants();loadDashboard();
+  toast('Tenant removed');
+}
+
+// PAYMENTS
+async function loadPayments(){
+  try{
+    const res=await fetch(`${API}/payments`);
+    allPayments=await res.json();
+    const tbody=document.getElementById('payments-table');
+    if(!allPayments||allPayments.length===0){tbody.innerHTML='<tr><td colspan="8" style="text-align:center;color:var(--text-muted);padding:2rem">No payments recorded</td></tr>';return;}
+    tbody.innerHTML=allPayments.map(p=>{
+      const tenant=allTenants.find(t=>t.id===p.tenant_id);
+      const prop=allProperties.find(pr=>pr.id===p.property_id);
+      return`<tr>
+        <td>${p.payment_date}</td>
+        <td>${tenant?tenant.full_name:'Unknown'}</td>
+        <td>${prop?prop.name:'-'}</td>
+        <td>${p.month_paid_for}</td>
+        <td><strong>KES ${p.amount.toLocaleString()}</strong></td>
+        <td><span class="badge badge-green">${p.payment_method}</span></td>
+        <td>${p.mpesa_ref||'-'}</td>
+        <td><a href="${API}/receipts/${p.id}" target="_blank" class="btn btn-sm btn-outline">🖨 Print</a></td>
+      </tr>`;
+    }).join('');
+  }catch(e){console.error('Payments error:',e);}
+}
+
+async function savePayment(){
+  const tenantVal=document.getElementById('pay-tenant').value;
+  const amountVal=document.getElementById('pay-amount').value;
+  const dateVal=document.getElementById('pay-date').value;
+  const monthVal=document.getElementById('pay-month').value;
+  if(!tenantVal){alert('Please select a tenant');return;}
+  if(!amountVal){alert('Please enter payment amount');return;}
+  if(!dateVal){alert('Please enter payment date');return;}
+  if(!monthVal){alert('Please enter month paid for');return;}
+  const tenantId=parseInt(tenantVal);
+  const tenant=allTenants.find(t=>t.id===tenantId);
+  const method=document.getElementById('pay-method').value;
+  let ref='';
+  if(method==='mpesa')ref=document.getElementById('pay-mpesa').value;
+  else if(method==='bank')ref=document.getElementById('pay-bank-ref').value;
+  else if(method==='cash')ref=document.getElementById('pay-cash-by').value;
+  const data={
+    tenant_id:tenantId,
+    property_id:tenant?tenant.property_id:null,
+    amount:parseFloat(amountVal),
+    payment_date:dateVal,
+    month_paid_for:monthVal,
+    mpesa_ref:ref||null,
+    payment_method:method,
+    notes:document.getElementById('pay-notes').value||null,
+  };
+  try{
+    const res=await fetch(`${API}/payments`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});
+    if(!res.ok){const err=await res.json();throw new Error(err.detail||'Failed to record payment');}
+    closeModal('payment-modal');
+    await loadPayments();
+    loadDashboard();
+    toast('✅ Payment recorded successfully!');
+  }catch(e){alert('Error recording payment: '+e.message);}
+}
+
+// PLOT SALES
+async function loadPlotSales(){
+  try{
+    const res=await fetch(`${API}/plot-sales`);
+    const sales=await res.json();
+    const tbody=document.getElementById('plots-table');
+    if(!sales||sales.length===0){tbody.innerHTML='<tr><td colspan="8" style="text-align:center;color:var(--text-muted);padding:2rem">No plot sales yet</td></tr>';return;}
+    const sb={available:'badge-amber',deposit_paid:'badge-gold',installments:'badge-amber',completed:'badge-green'};
+    const db={pending:'badge-amber',processing:'badge-gold',transferred:'badge-green'};
+    tbody.innerHTML=sales.map(s=>{
+      const prop=allProperties.find(p=>p.id===s.property_id);
+      return`<tr>
+        <td><strong>${s.buyer_name}</strong></td><td>${s.buyer_phone}</td>
+        <td>${prop?prop.name:'Unknown'}</td>
+        <td>KES ${s.sale_price.toLocaleString()}</td>
+        <td>KES ${s.deposit_paid.toLocaleString()}</td>
+        <td>KES ${s.balance_remaining.toLocaleString()}</td>
+        <td><span class="badge ${sb[s.status]||'badge-gray'}">${s.status.replace('_',' ')}</span></td>
+        <td><span class="badge ${db[s.title_deed_status]||'badge-gray'}">${s.title_deed_status}</span></td>
+      </tr>`;
+    }).join('');
+  }catch(e){}
+}
+
+async function savePlotSale(){
+  const data={
+    property_id:parseInt(document.getElementById('plot-property').value),
+    buyer_name:document.getElementById('plot-buyer').value,
+    buyer_phone:document.getElementById('plot-phone').value,
+    buyer_id_number:document.getElementById('plot-id').value||null,
+    sale_price:parseFloat(document.getElementById('plot-price').value),
+    deposit_paid:parseFloat(document.getElementById('plot-deposit').value)||0,
+    status:document.getElementById('plot-status').value,
+    title_deed_status:document.getElementById('plot-deed').value,
+    sale_date:document.getElementById('plot-date').value||null,
+    notes:document.getElementById('plot-notes').value||null,
+  };
+  try{
+    const res=await fetch(`${API}/plot-sales`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});
+    if(!res.ok)throw new Error('Failed');
+    closeModal('plot-modal');loadPlotSales();
+    toast('✅ Plot sale saved!');
+  }catch(e){alert('Error: '+e.message);}
+}
+
+// MAINTENANCE
+async function loadMaintenance(){
+  try{
+    const res=await fetch(`${API}/maintenance`);
+    const items=await res.json();
+    const tbody=document.getElementById('maintenance-table');
+    if(!items||items.length===0){tbody.innerHTML='<tr><td colspan="7" style="text-align:center;color:var(--text-muted);padding:2rem">No maintenance requests</td></tr>';return;}
+    const pb={low:'badge-green',medium:'badge-amber',high:'badge-red'};
+    const sb={open:'badge-red',in_progress:'badge-amber',done:'badge-green'};
+    tbody.innerHTML=items.map(m=>{
+      const prop=allProperties.find(p=>p.id===m.property_id);
+      return`<tr>
+        <td>${prop?prop.name:'Unknown'}</td><td>${m.description}</td>
+        <td><span class="badge ${pb[m.priority]}">${m.priority}</span></td>
+        <td>${m.assigned_to||'-'}</td>
+        <td>${m.cost?'KES '+m.cost.toLocaleString():'-'}</td>
+        <td><span class="badge ${sb[m.status]}">${m.status.replace('_',' ')}</span></td>
+        <td><button class="btn btn-sm btn-outline" onclick="markDone(${m.id})">Mark Done</button></td>
+      </tr>`;
+    }).join('');
+  }catch(e){}
+}
+
+async function saveMaintenance(){
+  const data={
+    property_id:parseInt(document.getElementById('maint-property').value),
+    description:document.getElementById('maint-desc').value,
+    priority:document.getElementById('maint-priority').value,
+    assigned_to:document.getElementById('maint-assigned').value||null,
+    cost:parseFloat(document.getElementById('maint-cost').value)||null,
+  };
+  try{
+    const res=await fetch(`${API}/maintenance`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});
+    if(!res.ok)throw new Error('Failed');
+    closeModal('maintenance-modal');loadMaintenance();loadDashboard();
+    toast('✅ Maintenance request saved!');
+  }catch(e){alert('Error: '+e.message);}
+}
+
+async function markDone(id){
+  try{
+    const res=await fetch(`${API}/maintenance/${id}`);
+    const item=await res.json();
+    await fetch(`${API}/maintenance/${id}`,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({...item,status:'done'})});
+    loadMaintenance();loadDashboard();toast('Marked as done');
+  }catch(e){}
+}
+
+// EXPENSES
+async function loadExpenses(){
+  try{
+    const res=await fetch(`${API}/expenses`);
+    const expenses=await res.json();
+    const tbody=document.getElementById('expenses-table');
+    if(!expenses||expenses.length===0){tbody.innerHTML='<tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:2rem">No expenses yet</td></tr>';return;}
+    tbody.innerHTML=expenses.map(e=>{
+      const prop=allProperties.find(p=>p.id===e.property_id);
+      return`<tr>
+        <td>${e.date}</td><td><span class="badge badge-gray">${e.category}</span></td>
+        <td><strong>KES ${e.amount.toLocaleString()}</strong></td>
+        <td>${prop?prop.name:'General'}</td><td>${e.description||'-'}</td>
+      </tr>`;
+    }).join('');
+  }catch(e){}
+}
+
+async function saveExpense(){
+  const data={
+    category:document.getElementById('exp-category').value,
+    amount:parseFloat(document.getElementById('exp-amount').value),
+    date:document.getElementById('exp-date').value,
+    property_id:parseInt(document.getElementById('exp-property').value)||null,
+    description:document.getElementById('exp-desc').value||null,
+  };
+  try{
+    const res=await fetch(`${API}/expenses`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});
+    if(!res.ok)throw new Error('Failed');
+    closeModal('expense-modal');loadExpenses();
+    toast('✅ Expense saved!');
+  }catch(e){alert('Error: '+e.message);}
+}
+
+// REPORTS
+async function loadMonthlyReport(){
+  const year=document.getElementById('report-year').value;
+  const month=document.getElementById('report-month').value;
+  try{
+    const res=await fetch(`${API}/reports/monthly?year=${year}&month=${month}`);
+    if(!res.ok)throw new Error('Failed');
+    const d=await res.json();
+    document.getElementById('reports-empty').style.display='none';
+    document.getElementById('yearly-report').style.display='none';
+    document.getElementById('tenant-report').style.display='none';
+    document.getElementById('monthly-report').style.display='block';
+    document.getElementById('rpt-rent').textContent='KES '+d.rent_collected.toLocaleString();
+    document.getElementById('rpt-plot').textContent='KES '+d.plot_revenue.toLocaleString();
+    document.getElementById('rpt-exp').textContent='KES '+d.total_expenses.toLocaleString();
+    document.getElementById('rpt-maint-cost').textContent='KES '+d.maintenance_cost.toLocaleString();
+    document.getElementById('rpt-net').textContent='KES '+d.net_revenue.toLocaleString();
+    document.getElementById('rpt-total-prop').textContent=d.total_properties;
+    document.getElementById('rpt-occupied').textContent=d.occupied_properties;
+    document.getElementById('rpt-vacant').textContent=d.vacant_properties;
+    document.getElementById('rpt-tenants').textContent=d.active_tenants;
+    document.getElementById('rpt-pay-count').textContent=d.payments_count;
+    document.getElementById('rpt-plots-sold').textContent=d.plots_sold;
+    document.getElementById('rpt-plots-pipe').textContent=d.plots_pipeline;
+    document.getElementById('rpt-plot-rev').textContent='KES '+d.plot_revenue.toLocaleString();
+    const payList=document.getElementById('rpt-payments-list');
+    payList.innerHTML=d.payments.length===0?'<p style="color:var(--text-muted);">No payments this month</p>':
+      d.payments.map(p=>`<div class="report-row"><span>Tenant #${p.tenant_id} · ${p.method}</span><span class="val green">KES ${p.amount.toLocaleString()}</span></div>`).join('');
+  }catch(e){alert('Error: '+e.message);}
+}
+
+async function loadYearlyReport(){
+  const year=document.getElementById('report-year').value;
+  try{
+    const res=await fetch(`${API}/reports/yearly?year=${year}`);
+    if(!res.ok)throw new Error('Failed');
+    const d=await res.json();
+    document.getElementById('reports-empty').style.display='none';
+    document.getElementById('monthly-report').style.display='none';
+    document.getElementById('tenant-report').style.display='none';
+    document.getElementById('yearly-report').style.display='block';
+    document.getElementById('yr-rent').textContent='KES '+d.total_rent_collected.toLocaleString();
+    document.getElementById('yr-plot').textContent='KES '+d.total_plot_revenue.toLocaleString();
+    document.getElementById('yr-exp').textContent='KES '+d.total_expenses.toLocaleString();
+    document.getElementById('yr-gross').textContent='KES '+d.gross_revenue.toLocaleString();
+    document.getElementById('yr-net').textContent='KES '+d.net_revenue.toLocaleString();
+    document.getElementById('yr-props').textContent=d.total_properties;
+    document.getElementById('yr-plots').textContent=d.plots_sold_count;
+    const best=d.monthly_breakdown.reduce((a,b)=>b.rent>a.rent?b:a,{rent:0,month:'-'});
+    document.getElementById('yr-best-month').innerHTML=`
+      <div class="report-row"><span>Best month</span><span class="val green">${best.month}</span></div>
+      <div class="report-row"><span>Income</span><span class="val green">KES ${best.rent.toLocaleString()}</span></div>`;
+    if(yearlyChart)yearlyChart.destroy();
+    const ctx=document.getElementById('yearly-chart').getContext('2d');
+    yearlyChart=new Chart(ctx,{type:'bar',data:{
+      labels:d.monthly_breakdown.map(m=>m.month.substring(5)),
+      datasets:[
+        {label:'Rent Income',data:d.monthly_breakdown.map(m=>m.rent),backgroundColor:'rgba(27,67,50,0.8)',borderRadius:4},
+        {label:'Expenses',data:d.monthly_breakdown.map(m=>m.expenses),backgroundColor:'rgba(192,57,43,0.7)',borderRadius:4},
+        {label:'Net',data:d.monthly_breakdown.map(m=>m.net),backgroundColor:'rgba(82,183,136,0.8)',borderRadius:4},
+      ]},
+      options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top'}},scales:{y:{beginAtZero:true}}}
+    });
+  }catch(e){alert('Error: '+e.message);}
+}
+
+function loadTenantReport(){
+  document.getElementById('reports-empty').style.display='none';
+  document.getElementById('monthly-report').style.display='none';
+  document.getElementById('yearly-report').style.display='none';
+  document.getElementById('tenant-report').style.display='block';
+  // Populate filter dropdowns
+  const landlords=[...new Set(allProperties.map(p=>p.landlord_name).filter(Boolean))];
+  const counties=[...new Set(allProperties.map(p=>p.county).filter(Boolean))];
+  document.getElementById('trpt-landlord').innerHTML='<option value="">All Landlords</option>'+landlords.map(l=>`<option>${l}</option>`).join('');
+  document.getElementById('trpt-county').innerHTML='<option value="">All Counties</option>'+counties.map(c=>`<option>${c}</option>`).join('');
+  document.getElementById('trpt-property').innerHTML='<option value="">All Properties</option>'+allProperties.map(p=>`<option value="${p.id}">${p.name}</option>`).join('');
+  tenantReportData=allTenants;
+  filterTenantReport();
+}
+
+function filterTenantReport(){
+  const landlord=document.getElementById('trpt-landlord').value;
+  const county=document.getElementById('trpt-county').value;
+  const type=document.getElementById('trpt-type').value;
+  const propId=document.getElementById('trpt-property').value;
+  const filtered=allTenants.filter(t=>{
+    const prop=allProperties.find(p=>p.id===t.property_id);
+    return(!landlord||(prop&&prop.landlord_name===landlord))&&
+      (!county||(prop&&prop.county===county))&&
+      (!type||(prop&&prop.room_type===type))&&
+      (!propId||t.property_id===parseInt(propId));
+  });
+  const totalRent=filtered.reduce((s,t)=>s+t.monthly_rent,0);
+  document.getElementById('trpt-count').textContent=`${filtered.length} tenants`;
+  document.getElementById('trpt-total').textContent=filtered.length;
+  document.getElementById('trpt-total-rent').textContent='KES '+totalRent.toLocaleString();
+  const tbody=document.getElementById('trpt-table');
+  if(filtered.length===0){tbody.innerHTML='<tr><td colspan="9" style="text-align:center;color:var(--text-muted);padding:2rem">No tenants match filters</td></tr>';return;}
+  tbody.innerHTML=filtered.map(t=>{
+    const prop=allProperties.find(p=>p.id===t.property_id);
+    return`<tr>
+      <td><strong>${t.full_name}</strong></td><td>${t.phone}</td>
+      <td>${prop?prop.name:'-'}</td>
+      <td>${prop&&prop.room_type?prop.room_type:'-'}</td>
+      <td>${prop&&prop.landlord_name?prop.landlord_name:'-'}</td>
+      <td>${prop?prop.county:'-'}</td>
+      <td>KES ${t.monthly_rent.toLocaleString()}</td>
+      <td>${t.lease_start||'-'}</td>
+      <td><span class="badge badge-green">${t.status}</span></td>
+    </tr>`;
+  }).join('');
+}
+
+// POPULATE SELECTS
+function populateSelects(){
+  const propSelects=['ten-property','plot-property','maint-property'];
+  propSelects.forEach(id=>{
+    const sel=document.getElementById(id);
+    if(!sel)return;
+    sel.innerHTML='<option value="">-- Select property --</option>'+allProperties.map(p=>`<option value="${p.id}">${p.name} (${p.type}) - ${p.county}</option>`).join('');
+  });
+  const expSel=document.getElementById('exp-property');
+  if(expSel)expSel.innerHTML='<option value="">General</option>'+allProperties.map(p=>`<option value="${p.id}">${p.name}</option>`).join('');
+  const paySel=document.getElementById('pay-tenant');
+  if(paySel)paySel.innerHTML='<option value="">-- Select tenant --</option>'+allTenants.map(t=>`<option value="${t.id}">${t.full_name} - ${t.phone}</option>`).join('');
+}
+</script>
+
+<!-- EDIT PROPERTY MODAL -->
+<div class="modal-overlay" id="edit-property-modal">
+  <div class="modal">
+    <div class="modal-header"><span class="modal-title">Edit Property</span><button class="modal-close" onclick="closeModal('edit-property-modal')">×</button></div>
+    <input type="hidden" id="edit-prop-id" />
+    <div class="form-row">
+      <div class="form-group"><label>Property Name</label><input type="text" id="edit-prop-name" /></div>
+      <div class="form-group"><label>Type</label><select id="edit-prop-type"><option value="house">House / Rental</option><option value="plot">Plot</option></select></div>
+    </div>
+    <div class="form-group"><label>Landlord Name</label><input type="text" id="edit-prop-landlord" /></div>
+    <div class="form-row">
+      <div class="form-group"><label>Location</label><input type="text" id="edit-prop-location" /></div>
+      <div class="form-group"><label>County</label><select id="edit-prop-county">
+<option>Embu</option><option>Isiolo</option><option>Kajiado</option><option>Kiambu</option>
+        <option>Kilifi</option><option>Kirinyaga</option><option>Kisii</option><option>Kisumu</option>
+        <option>Kitui</option><option>Kwale</option><option>Laikipia</option><option>Machakos</option>
+        <option>Makueni</option><option>Malindi</option><option>Marsabit</option><option>Meru</option>
+        <option>Mombasa</option><option>Murang'a</option><option>Nairobi</option><option>Nakuru</option>
+        <option>Nandi</option><option>Narok</option><option>Nyeri</option><option>Samburu</option>
+        <option>Siaya</option><option>Thika</option><option>Uasin Gishu</option>
+      </select></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Room / Property Type</label><select id="edit-prop-room-type">
+        <option value="">Select type</option>
+        <option>Single Room</option><option>Bedsitter</option><option>Double Room</option>
+        <option>1 Bedroom</option><option>2 Bedroom</option><option>3 Bedroom</option>
+        <option>4 Bedroom</option><option>Bungalow</option><option>Maisonette</option><option>Plot</option>
+      </select></div>
+      <div class="form-group"><label>Units Available</label><input type="number" id="edit-prop-units" placeholder="e.g. 5" /></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Monthly Rent (KES)</label><input type="number" id="edit-prop-rent" /></div>
+      <div class="form-group"><label>Sale Price (KES)</label><input type="number" id="edit-prop-price" /></div>
+    </div>
+    <div class="form-group"><label>Status</label><select id="edit-prop-status"><option value="vacant">Vacant</option><option value="occupied">Occupied</option><option value="for_sale">For Sale</option><option value="sold">Sold</option></select></div>
+    <div class="form-group"><label>Description</label><textarea id="edit-prop-desc" rows="2"></textarea></div>
+    <div class="form-group">
+      <label>Property Image</label>
+      <div class="img-preview" id="edit-prop-img-preview" onclick="document.getElementById('edit-prop-img-file').click()">
+        <span>📷 Click to change image</span>
+      </div>
+      <input type="file" id="edit-prop-img-file" accept="image/jpeg,image/png,image/webp" style="display:none" onchange="previewEditImage(this)" />
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('edit-property-modal')">Cancel</button>
+      <button class="btn btn-accent" onclick="updateProperty()">Save Changes</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- EDIT TENANT MODAL -->
+<div class="modal-overlay" id="edit-tenant-modal">
+  <div class="modal">
+    <div class="modal-header"><span class="modal-title">Edit Tenant</span><button class="modal-close" onclick="closeModal('edit-tenant-modal')">×</button></div>
+    <input type="hidden" id="edit-ten-id" />
+    <div class="form-row">
+      <div class="form-group"><label>Full Name *</label><input type="text" id="edit-ten-name" /></div>
+      <div class="form-group"><label>Phone * (mandatory)</label><input type="text" id="edit-ten-phone" /></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Email</label><input type="email" id="edit-ten-email" /></div>
+      <div class="form-group"><label>ID Number * (mandatory)</label><input type="text" id="edit-ten-id-num" /></div>
+    </div>
+    <div class="form-group"><label>Property</label><select id="edit-ten-property" onchange="autoFillEditRent()"><option value="">-- Select property --</option></select></div>
+    <div class="form-row">
+      <div class="form-group"><label>Monthly Rent (KES)</label><input type="number" id="edit-ten-rent" /></div>
+      <div class="form-group"><label>Deposit Paid (KES)</label><input type="number" id="edit-ten-deposit" /></div>
+    </div>
+    <div class="form-group"><label>Lease Start Date</label><input type="date" id="edit-ten-start" /></div>
+    <div class="form-group">
+      <label style="display:flex;align-items:center;gap:8px;">
+        <input type="checkbox" id="edit-ten-has-end" onchange="toggleEditLeaseEnd()" /> Has fixed lease end date
+      </label>
+    </div>
+    <div class="form-group" id="edit-ten-end-group" style="display:none;"><label>Lease End Date</label><input type="date" id="edit-ten-end" /></div>
+    <div class="form-group"><label>Status</label><select id="edit-ten-status"><option value="active">Active</option><option value="inactive">Inactive</option></select></div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('edit-tenant-modal')">Cancel</button>
+      <button class="btn btn-accent" onclick="updateTenant()">Save Changes</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// EDIT TENANT
+function editTenant(id){
+  const t=allTenants.find(x=>x.id===id);
+  if(!t)return;
+  document.getElementById('edit-ten-id').value=t.id;
+  document.getElementById('edit-ten-name').value=t.full_name||'';
+  document.getElementById('edit-ten-phone').value=t.phone||'';
+  document.getElementById('edit-ten-email').value=t.email||'';
+  document.getElementById('edit-ten-id-num').value=t.id_number||'';
+  document.getElementById('edit-ten-rent').value=t.monthly_rent||'';
+  document.getElementById('edit-ten-deposit').value=t.deposit_paid||'';
+  document.getElementById('edit-ten-start').value=t.lease_start||'';
+  document.getElementById('edit-ten-end').value=t.lease_end||'';
+  document.getElementById('edit-ten-status').value=t.status||'active';
+  const hasEnd=!!t.lease_end;
+  document.getElementById('edit-ten-has-end').checked=hasEnd;
+  document.getElementById('edit-ten-end-group').style.display=hasEnd?'block':'none';
+  // Populate property select
+  const sel=document.getElementById('edit-ten-property');
+  sel.innerHTML='<option value="">-- Select property --</option>'+allProperties.map(p=>`<option value="${p.id}"${p.id===t.property_id?' selected':''}>${p.name} (${p.type}) - ${p.county}</option>`).join('');
+  document.getElementById('edit-tenant-modal').classList.add('open');
+}
+
+function toggleEditLeaseEnd(){
+  const show=document.getElementById('edit-ten-has-end').checked;
+  document.getElementById('edit-ten-end-group').style.display=show?'block':'none';
+}
+
+function autoFillEditRent(){
+  const propId=parseInt(document.getElementById('edit-ten-property').value);
+  const prop=allProperties.find(p=>p.id===propId);
+  if(prop&&prop.rent_amount){document.getElementById('edit-ten-rent').value=prop.rent_amount;}
+}
+
+async function updateTenant(){
+  const id=document.getElementById('edit-ten-id').value;
+  const nameVal=document.getElementById('edit-ten-name').value.trim();
+  const phoneVal=document.getElementById('edit-ten-phone').value.trim();
+  const idNumVal=document.getElementById('edit-ten-id-num').value.trim();
+  const propVal=document.getElementById('edit-ten-property').value;
+  const rentVal=document.getElementById('edit-ten-rent').value;
+  if(!nameVal){alert('Please enter tenant full name');return;}
+  if(!phoneVal){alert('Phone number is mandatory');return;}
+  if(!idNumVal){alert('ID number is mandatory');return;}
+  if(!propVal){alert('Please select a property');return;}
+  if(!rentVal){alert('Please enter monthly rent');return;}
+  const hasEnd=document.getElementById('edit-ten-has-end').checked;
+  const data={
+    full_name:nameVal,
+    phone:phoneVal,
+    email:document.getElementById('edit-ten-email').value.trim()||null,
+    id_number:idNumVal,
+    property_id:parseInt(propVal),
+    monthly_rent:parseFloat(rentVal),
+    deposit_paid:parseFloat(document.getElementById('edit-ten-deposit').value)||0,
+    lease_start:document.getElementById('edit-ten-start').value||null,
+    lease_end:hasEnd?document.getElementById('edit-ten-end').value||null:null,
+  };
+  try{
+    const res=await fetch(`${API}/tenants/${id}`,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});
+    if(!res.ok){const err=await res.json();throw new Error(err.detail||'Failed');}
+    closeModal('edit-tenant-modal');
+    await loadTenants();
+    toast('✅ Tenant updated!');
+  }catch(e){alert('Error: '+e.message);}
+}
+
+// PRINT REPORT - clean print without sidebar
+function printReport(type){
+  const titles={tenants:'Tenant Report',properties:'Property Report',payments:'Rent Payments Report'};
+  const printWin=window.open('','_blank','width=900,height=700');
+  let tableHTML='';
+  
+  if(type==='tenants'){
+    const rows=document.getElementById('trpt-table') ? document.getElementById('trpt-table').innerHTML : '';
+    tableHTML=`
+      <table border="1" cellpadding="8" cellspacing="0" style="width:100%;border-collapse:collapse;font-size:12px;">
+        <thead style="background:#1B4332;color:white;">
+          <tr><th>Name</th><th>Phone</th><th>ID No.</th><th>Property</th><th>Room Type</th><th>Landlord</th><th>County</th><th>Monthly Rent</th><th>Lease Start</th><th>Status</th></tr>
+        </thead>
+        <tbody>${rows}</tbody>
+      </table>`;
+    const total=document.getElementById('trpt-total-rent')?document.getElementById('trpt-total-rent').textContent:'';
+    const count=document.getElementById('trpt-total')?document.getElementById('trpt-total').textContent:'';
+    tableHTML+=`<div style="margin-top:16px;padding:12px;background:#f5f5f5;border-radius:6px;">
+      <strong>Total Tenants:</strong> ${count} &nbsp;&nbsp; <strong>Total Monthly Rent:</strong> ${total}</div>`;
+  }
+  
+  else if(type==='properties'){
+    const rows=allProperties.map(p=>`<tr>
+      <td>${p.name}</td><td>${p.type}</td><td>${p.room_type||'-'}</td>
+      <td>${p.landlord_name||'-'}</td><td>${p.location}</td><td>${p.county}</td>
+      <td>${p.status.replace('_',' ')}</td>
+      <td>${p.rent_amount?'KES '+p.rent_amount.toLocaleString():'-'}</td>
+      <td>${p.sale_price?'KES '+p.sale_price.toLocaleString():'-'}</td>
+      <td>${p.size_sqft?p.size_sqft+' units':'-'}</td>
+    </tr>`).join('');
+    tableHTML=`
+      <table border="1" cellpadding="8" cellspacing="0" style="width:100%;border-collapse:collapse;font-size:12px;">
+        <thead style="background:#1B4332;color:white;">
+          <tr><th>Name</th><th>Type</th><th>Room Type</th><th>Landlord</th><th>Location</th><th>County</th><th>Status</th><th>Rent</th><th>Sale Price</th><th>Units</th></tr>
+        </thead>
+        <tbody>${rows}</tbody>
+      </table>
+      <div style="margin-top:16px;padding:12px;background:#f5f5f5;border-radius:6px;">
+        <strong>Total Properties:</strong> ${allProperties.length} &nbsp;&nbsp;
+        <strong>Occupied:</strong> ${allProperties.filter(p=>p.status==='occupied').length} &nbsp;&nbsp;
+        <strong>Vacant:</strong> ${allProperties.filter(p=>p.status==='vacant').length}
+      </div>`;
+  }
+  
+  else if(type==='payments'){
+    const rows=allPayments.map(p=>{
+      const tenant=allTenants.find(t=>t.id===p.tenant_id);
+      const prop=allProperties.find(pr=>pr.id===p.property_id);
+      return`<tr>
+        <td>${p.payment_date}</td>
+        <td>${tenant?tenant.full_name:'Unknown'}</td>
+        <td>${prop?prop.name:'-'}</td>
+        <td>${p.month_paid_for}</td>
+        <td>KES ${p.amount.toLocaleString()}</td>
+        <td>${p.payment_method}</td>
+        <td>${p.mpesa_ref||'-'}</td>
+      </tr>`;
+    }).join('');
+    const totalPaid=allPayments.reduce((s,p)=>s+p.amount,0);
+    tableHTML=`
+      <table border="1" cellpadding="8" cellspacing="0" style="width:100%;border-collapse:collapse;font-size:12px;">
+        <thead style="background:#1B4332;color:white;">
+          <tr><th>Date</th><th>Tenant</th><th>Property</th><th>Month</th><th>Amount</th><th>Method</th><th>Reference</th></tr>
+        </thead>
+        <tbody>${rows}</tbody>
+      </table>
+      <div style="margin-top:16px;padding:12px;background:#f5f5f5;border-radius:6px;">
+        <strong>Total Payments:</strong> ${allPayments.length} &nbsp;&nbsp;
+        <strong>Total Amount:</strong> KES ${totalPaid.toLocaleString()}
+      </div>`;
+  }
+
+  // Build print HTML safely without closing tags breaking the parser
+  const styleTag = '<'+'style>';
+  const styleClose = '<'+'/style>';
+  const headClose = '<'+'/head>';
+  const bodyClose = '<'+'/body>';
+  const htmlClose = '<'+'/html>';
+  const html = '<!DOCTYPE html><html><head>'+
+    '<title>Gandwi Agencies - '+titles[type]+'</title>'+
+    styleTag+
+    'body{font-family:Arial,sans-serif;padding:20px;color:#1a1a2e;}'+
+    'h1{color:#1B4332;font-size:22px;margin-bottom:4px;}'+
+    'p{color:#6B7280;font-size:13px;margin-bottom:20px;}'+
+    'table{width:100%;border-collapse:collapse;}'+
+    'th{background:#1B4332;color:white;padding:8px;font-size:12px;text-align:left;}'+
+    'td{padding:8px;font-size:12px;border-bottom:1px solid #E5E7EB;}'+
+    'tr:nth-child(even){background:#F9FAFB;}'+
+    '@media print{button{display:none!important;}}'+
+    styleClose+headClose+
+    '<body>'+
+    '<h1>Gandwi Agencies Management System</h1>'+
+    '<p>'+titles[type]+' — Generated on '+new Date().toLocaleDateString('en-KE',{day:'numeric',month:'long',year:'numeric'})+'</p>'+
+    tableHTML+
+    '<br/><button onclick="window.print()" style="background:#1B4332;color:white;padding:10px 20px;border:none;border-radius:6px;cursor:pointer;font-size:14px;">🖨 Print</button>'+
+    bodyClose+htmlClose;
+
+  printWin.document.write(html);
+  printWin.document.close();
+}
+</script>
+
+</body>
+</html>
